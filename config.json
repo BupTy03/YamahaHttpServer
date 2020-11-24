@@ -1,51 +1,53 @@
 {
-	"location_info": {
-		"zone_list": {
-			"main": true,
-			"zone1": false,
-			"zone2": false,
-			"zone3": false
-		}
-	},
-
-	"zones_info": {
-		"main": {
-			"input": "spotify",
-			"mute": false,
-			"power": "on"
-		},
-		"zone1": {
-			"input": "airplay",
-			"mute": true,
-			"power": "off"
-		},
-		"zone2": {
-			"input": "juke",
-			"mute": true,
-			"power": "off"
-		},
-		"zone3": {
-			"input": "tidal",
-			"mute": true,
-			"power": "off"
-		}
-	},
-
-	"tuner_play_info": {
-		"band": "Queen",
-		"fm":{
-			"freq": 174000
-		}
-	},
-
-	"netusb_play_info": {
-		"playback": "stop",
-		"repeat": "off",
-		"shuffle": "off",
-		"play_time": 200,
-		"total_time": 314,
-		"album": "News of the world",
-		"artist": "Freddie Mercury",
-		"track": "We Are the Champions"
-	}
+    "location_info": {
+        "zone_list": {
+            "main": true,
+            "zone1": false,
+            "zone2": false,
+            "zone3": false
+        }
+    },
+    "zones_info": {
+        "main": {
+            "input": "spotify",
+            "mute": false,
+            "power": "on",
+            "volume": 5
+        },
+        "zone1": {
+            "input": "airplay",
+            "mute": true,
+            "power": "off",
+            "volume": 0
+        },
+        "zone2": {
+            "input": "juke",
+            "mute": true,
+            "power": "off",
+            "volume": 1
+        },
+        "zone3": {
+            "input": "tidal",
+            "mute": true,
+            "power": "off",
+            "volume": 100
+        }
+    },
+    "tuner_play_info": {
+        "band": "Queen",
+        "fm": {
+            "freq": 174000
+        },
+        "switch_preset": "next"
+    },
+    "netusb_play_info": {
+        "playback": "next",
+        "repeat": "one",
+        "shuffle": "on",
+        "play_time": 200,
+        "total_time": 314,
+        "album": "News of the world",
+        "artist": "Freddie Mercury",
+        "track": "We Are the Champions"
+    }
 }

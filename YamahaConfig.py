@@ -26,26 +26,53 @@ class YamahaConfig(object):
             if not file:
                 return
 
-            file.write(json.dumps(self.data))
+            file.write(json.dumps(self.data, indent=4))
 
-    def _read_field(self, field):
+    def read_field(self, field):
         self._update_from_file()
         if not self.data:
             return {}
 
         return self.data[field]
 
-    def location_info(self):
-        return self._read_field("location_info")
-
     def zone_info(self, zone_name):
-        zones_info = self._read_field("zones_info")
+        zones_info = self.read_field("zones_info")
         if zones_info:
             return zones_info[zone_name]
         return {}
 
-    def tuner_play_info(self):
-        return self._read_field("tuner_play_info")
+    def set_zone_param(self, zone_name, param_name, param_value):
+        self._update_from_file()
+        self.data["zones_info"][zone_name][param_name] = param_value
+        self._store_to_file()
 
-    def netusb_play_info(self):
-        return self._read_field("netusb_play_info")
+    def toggle_repeat(self):
+        self._update_from_file()
+        repeat = self.data["netusb_play_info"]["repeat"]
+        if repeat == "one":
+            self.data["netusb_play_info"]["repeat"] = "off"
+        elif repeat == "off":
+            self.data["netusb_play_info"]["repeat"] = "one"
+
+        self._store_to_file()
+
+    def toggle_shuffle(self):
+        self._update_from_file()
+        shuffle = self.data["netusb_play_info"]["shuffle"]
+        if shuffle == "on":
+            self.data["netusb_play_info"]["shuffle"] = "off"
+        elif shuffle == "off":
+            self.data["netusb_play_info"]["shuffle"] = "on"
+
+        self._store_to_file()
+
+    def set_playback(self, playback):
+        self._update_from_file()
+        self.data["netusb_play_info"]["playback"] = playback
+        self._store_to_file()
+
+    def set_switch_preset(self, switch_preset):
+        self._update_from_file()
+        self.data["tuner_play_info"]["switch_preset"] = switch_preset
+        self._store_to_file()
+
