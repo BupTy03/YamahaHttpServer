@@ -9,7 +9,7 @@
     },
     "zones_info": {
         "main": {
-            "input": "spotify",
+            "input": "cd",
             "mute": false,
             "power": "on",
             "volume": 5
@@ -33,21 +33,92 @@
             "volume": 100
         }
     },
-    "tuner_play_info": {
-        "band": "Queen",
-        "fm": {
-            "freq": 174000
+    "play_info": {
+        "tuner": {
+            "band": "Queen",
+            "fm": {
+                "freq": 174000
+            },
+            "switch_preset": "next"
         },
-        "switch_preset": "next"
+        "netusb": {
+            "playback": "next",
+            "repeat": "off",
+            "shuffle": "off",
+            "play_time": 201,
+            "total_time": 314,
+            "album": "News of the world",
+            "artist": "Freddie Mercury",
+            "track": "We Are the Champions"
+        },
+        "cd": {
+            "playback": "next",
+            "repeat": "off",
+            "shuffle": "off",
+            "play_time": 207,
+            "total_time": 314,
+            "album": "News of the world",
+            "artist": "Freddie Mercury",
+            "track": "We Are the Champions",
+            "disc_time": 5,
+            "track_number": 3,
+            "total_tracks": 10
+        }
     },
-    "netusb_play_info": {
-        "playback": "next",
-        "repeat": "one",
-        "shuffle": "on",
-        "play_time": 200,
-        "total_time": 314,
-        "album": "News of the world",
-        "artist": "Freddie Mercury",
-        "track": "We Are the Champions"
+    "system": {
+        "input_list": [
+            {
+                "id": "cd",
+                "play_info_type": "cd"
+            },
+            {
+                "id": "tuner",
+                "play_info_type": "tuner"
+            },
+            {
+                "id": "am",
+                "play_info_type": "tuner"
+            },
+            {
+                "id": "fm",
+                "play_info_type": "tuner"
+            },
+            {
+                "id": "dab",
+                "play_info_type": "tuner"
+            },
+            {
+                "id": "net_radio",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "napster",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "spotify",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "juke",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "deezer",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "airplay",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "alexa",
+                "play_info_type": "netusb"
+            },
+            {
+                "id": "bluetooth",
+                "play_info_type": "netusb"
+            }
+        ]
     }
 }
