@@ -102,7 +102,7 @@ class YamahaConfig(object):
         elif "cd" == play_info_type:
             self._toggle_cd_repeat()
         else:
-            assert False, "Wrong play_info_type {} for toggle_repeat".format(play_info_type)
+            assert False, f"Wrong play_info_type {play_info_type} for toggle_repeat"
 
         self._store_to_file()
 
@@ -114,7 +114,7 @@ class YamahaConfig(object):
         elif "cd" == play_info_type:
             self._toggle_cd_shuffle()
         else:
-            assert False, "Wrong play_info_type {} for toggle_shuffle".format(play_info_type)
+            assert False, f"Wrong play_info_type {play_info_type} for toggle_shuffle"
 
         self._store_to_file()
 

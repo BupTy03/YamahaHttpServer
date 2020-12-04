@@ -83,7 +83,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.config.set_switch_preset(switch_preset)
             self._send_json({"response_code": 0})
         else:
-            print("Unknown request: {}".format(parsed_path))
+            print(f"Unknown request: {parsed_path}")
             self.send_response(404)
             self.end_headers()
 
@@ -91,7 +91,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         try:
             self._make_response()
         except Exception as e:
-            print("Exception: {}".format(e))
+            print(f"Exception: {e}")
             self.send_response(400)
             self.end_headers()
 
