@@ -120,7 +120,16 @@ class YamahaConfig(object):
 
     def set_playback(self, play_info_type, playback):
         self._update_from_file()
+
+        if playback in ("next", "previous"):
+            return
+
         self.data["play_info"][play_info_type]["playback"] = playback
+        self._store_to_file()
+
+    def set_cd_track_number(self, track_number):
+        self._update_from_file()
+        self.data["play_info"]["cd"]["track_number"] = int(track_number)
         self._store_to_file()
 
     def set_switch_preset(self, switch_preset):

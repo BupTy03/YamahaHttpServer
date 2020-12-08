@@ -11,7 +11,7 @@
         "main": {
             "input": "spotify",
             "mute": false,
-            "power": "on",
+            "power": "standby",
             "volume": 5
         },
         "zone1": {
@@ -36,15 +36,21 @@
     "play_info": {
         "tuner": {
             "band": "fm",
-            "fm": {
+            "am": {
                 "freq": 174000
             },
-            "switch_preset": "next"
+            "fm": {
+                "freq": 174001
+            },
+            "dab": {
+                "freq": 174002
+            },
+            "switch_preset": "previous"
         },
         "netusb": {
-            "playback": "next",
+            "playback": "play",
             "repeat": "one",
-            "shuffle": "on",
+            "shuffle": "songs",
             "play_time": 207,
             "total_time": 314,
             "album": "News of the world",
@@ -52,7 +58,7 @@
             "track": "We Are the Champions"
         },
         "cd": {
-            "playback": "next",
+            "playback": "track_select",
             "repeat": "off",
             "shuffle": "folder",
             "play_time": 204,
@@ -61,7 +67,7 @@
             "artist": "Freddie Mercury",
             "track": "We Are the Champions",
             "disc_time": 6,
-            "track_number": 3,
+            "track_number": 5,
             "total_tracks": 10
         }
     },
