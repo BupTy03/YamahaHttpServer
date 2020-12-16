@@ -129,7 +129,17 @@ class YamahaConfig(object):
 
     def set_cd_track_number(self, track_number):
         self._update_from_file()
-        self.data["play_info"]["cd"]["track_number"] = int(track_number)
+        track_number = int(track_number)
+        self.data["play_info"]["cd"]["track_number"] = track_number
+
+        cd_playlist = self.data["playlist"]["cd"]
+        track_info = cd_playlist[track_number]
+        cd_playinfo = self.data["play_info"]["cd"]
+        cd_playinfo["play_time"] = 0
+        cd_playinfo["total_time"] = track_info["total_time"]
+        cd_playinfo["album"] = track_info["album"]
+        cd_playinfo["track"] = track_info["track"]
+        cd_playinfo["disc_time"] = sum(cd_playlist[i]["total_time"] for i in range(track_number))
         self._store_to_file()
 
     def set_switch_preset(self, switch_preset):

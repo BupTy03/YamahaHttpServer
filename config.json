@@ -33,6 +33,74 @@
             "volume": 100
         }
     },
+
+    "playlist": {
+        "netusb": [
+            {
+                "album": "News of the world",
+                "artist": "Freddie Mercury",
+                "track": "We Will Rock You",
+                "total_time": 121
+            },
+            {
+                "album": "News of the world",
+                "artist": "Freddie Mercury",
+                "track": "We Are the Champions",
+                "total_time": 179
+            },
+            {
+                "album": "News of the world",
+                "artist": "Mercury and Taylor",
+                "track": "Sheer Heart Attack",
+                "total_time": 204
+            },
+            {
+                "album": "News of the world",
+                "artist": "Freddie Mercury",
+                "track": "All Dead, All Dead",
+                "total_time": 189
+            },
+            {
+                "album": "News of the world",
+                "artist": "Freddie Mercury",
+                "track": "Spread Your Wings",
+                "total_time": 272
+            }
+        ],
+        "cd": [
+            {
+                "album": "Ben",
+                "artist": "Michael Jackson",
+                "track": "Ben",
+                "total_time": 164
+            },
+            {
+                "album": "Ben",
+                "artist": "Michael Jackson",
+                "track": "The Greatest Show on Earth",
+                "total_time": 168
+            },
+            {
+                "album": "Ben",
+                "artist": "Michael Jackson",
+                "track": "People Make the World Go Round",
+                "total_time": 195
+            },
+            {
+                "album": "Ben",
+                "artist": "Michael Jackson",
+                "track": "We've Got a Good Thing Going",
+                "total_time": 179
+            },
+            {
+                "album": "Ben",
+                "artist": "Michael Jackson",
+                "track": "Everybody's Somebody's Fool",
+                "total_time": 179
+            }
+        ]
+    },
+
     "play_info": {
         "tuner": {
             "band": "fm",
@@ -50,19 +118,19 @@
         "netusb": {
             "playback": "play",
             "repeat": "one",
-            "shuffle": "songs",
-            "play_time": 207,
-            "total_time": 314,
+            "shuffle": "albums",
+            "play_time": 200,
+            "total_time": 202,
             "album": "News of the world",
             "artist": "Freddie Mercury",
             "track": "We Are the Champions"
         },
         "cd": {
-            "playback": "track_select",
+            "playback": "pause",
             "repeat": "off",
             "shuffle": "folder",
             "play_time": 204,
-            "total_time": 314,
+            "total_time": 207,
             "album": "News of the world",
             "artist": "Freddie Mercury",
             "track": "We Are the Champions",
