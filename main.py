@@ -94,7 +94,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 
-
 def main():
     httpd = HTTPServer(("localhost", 80), SimpleHTTPRequestHandler)
     httpd.serve_forever()
