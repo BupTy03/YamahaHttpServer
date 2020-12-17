@@ -24,21 +24,23 @@ class YamahaPlaylist(object):
         self._tracks = tracks
         self._tracks_indexes = list(range(len(tracks)))
         self._current_track_index = 0
-
         self._last_sync_sec = int(time.time())
         self._play_time_sec = 0
         self._play_state = PlayState.stop
         self._repeat_mode = RepeatMode.ALL
 
-    def sync(self, current_time_sec=int(time.time())):
+    def sync(self):
+        return self.sync_time(int(time.time()))
+
+    def sync_time(self, current_time_sec: int):
         # Сверим часы:
         # 1. Определим какой сейчас играет трек: self._current_track_index
         # 2. Выставим соответствующее время проигрывания: self._play_time
-        if self._play_state != PlayState.play:
-            return self._current_track_index, self._play_time_sec
 
         elapsed_time_sec = current_time_sec - self._last_sync_sec
         self._last_sync_sec = current_time_sec
+        if self._play_state != PlayState.play:
+            return self._current_track_index, self._play_time_sec
 
         current_track = self._tracks[self._tracks_indexes[self._current_track_index]]
         if self._repeat_mode == RepeatMode.ONE:
@@ -56,7 +58,7 @@ class YamahaPlaylist(object):
             self._current_track_index = (self._current_track_index + 1) % self.count_tracks()
             current_track = self._tracks[self._tracks_indexes[self._current_track_index]]
 
-        self._play_time_sec = elapsed_time_sec
+        self._play_time_sec += elapsed_time_sec
         return self._current_track_index, self._play_time_sec
 
     def play_state(self):
@@ -139,19 +141,19 @@ class TestYamahaPlaylist(unittest.TestCase):
         # если проигрывание было запущено - время синхронизируется с учётом прошедшего времени
         play_time = 3
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
 
         # если проигрывание было приостановлено - время проигрывания не изменится
         play_time = 10
         self._yamahaPlaylist.pause()
         last_play_time = self._yamahaPlaylist._play_time_sec
-        self._yamahaPlaylist.sync(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
         self.assertEqual(last_play_time, self._yamahaPlaylist._play_time_sec)
 
         # если проигрывание было остановлено - время проигрывания остаётся равным нулю
         play_time = 10
         self._yamahaPlaylist.stop()
-        self._yamahaPlaylist.sync(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
 

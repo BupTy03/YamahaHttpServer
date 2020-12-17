@@ -8,25 +8,33 @@ from YamahaPlaylist import YamahaPlaylist
 
 class YamahaSystem(object):
 
-    def __init__(self):
-        self._zones = [
-            YamahaZone(name="main", input_name="spotify", mute=False, power="on", volume=5),
-            YamahaZone(name="zone1", input_name="airplay", mute=True, power="standby", volume=0),
-            YamahaZone(name="zone2", input_name="juke", mute=False, power="standby", volume=1),
-            YamahaZone(name="zone3", input_name="tidal", mute=False, power="standby", volume=100)
-        ]
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(YamahaSystem, cls).__new__(cls)
+            cls.instance._zones = [
+                YamahaZone(name="main", input_name="spotify", mute=False, power="on", volume=5),
+                YamahaZone(name="zone1", input_name="airplay", mute=True, power="standby", volume=0),
+                YamahaZone(name="zone2", input_name="juke", mute=False, power="standby", volume=1),
+                YamahaZone(name="zone3", input_name="tidal", mute=False, power="standby", volume=100)
+            ]
 
-        self._netusb = YamahaNetusb(YamahaPlaylist([
-            YamahaTrack(track="We Will Rock You", album="News of the world", artist="Freddie Mercury", total_time=121),
-            YamahaTrack(track="We Are the Champions", album="News of the world", artist="Freddie Mercury", total_time=179),
-            YamahaTrack(track="Sheer Heart Attack", album="News of the world", artist="Freddie Mercury", total_time=204)
-        ]))
-        self._tuner = YamahaTuner()
-        self._cd = YamahaCD(YamahaPlaylist([
-            YamahaTrack(track="Ben", album="Ben", artist="Michael Jackson", total_time=164),
-            YamahaTrack(track="The Greatest Show on Earth", album="Ben", artist="Michael Jackson", total_time=168),
-            YamahaTrack(track="People Make the World Go Round", album="Ben", artist="Michael Jackson", total_time=195)
-        ]))
+            cls.instance._netusb = YamahaNetusb(YamahaPlaylist([
+                YamahaTrack(track="We Will Rock You", album="News of the world", artist="Freddie Mercury",
+                            total_time=121),
+                YamahaTrack(track="We Are the Champions", album="News of the world", artist="Freddie Mercury",
+                            total_time=179),
+                YamahaTrack(track="Sheer Heart Attack", album="News of the world", artist="Freddie Mercury",
+                            total_time=204)
+            ]))
+            cls.instance._tuner = YamahaTuner()
+            cls.instance._cd = YamahaCD(YamahaPlaylist([
+                YamahaTrack(track="Ben", album="Ben", artist="Michael Jackson", total_time=164),
+                YamahaTrack(track="The Greatest Show on Earth", album="Ben", artist="Michael Jackson", total_time=168),
+                YamahaTrack(track="People Make the World Go Round", album="Ben", artist="Michael Jackson",
+                            total_time=195)
+            ]))
+
+        return cls.instance
 
     def get_zone(self, name):
         zones = list(filter(lambda z: z.name == name, self._zones))
