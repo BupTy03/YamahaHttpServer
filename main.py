@@ -1,14 +1,31 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from YamahaConfig import YamahaConfig, to_boolean
+from YamahaSystem import YamahaSystem
 
 import urllib
 import json
 import re
 
 
+def set_playback(yamaha_input, playback):
+    assert playback in ("play", "stop", "pause", "next", "previous")
+
+    if playback == "play":
+        yamaha_input.play()
+    elif playback == "stop":
+        yamaha_input.stop()
+    elif playback == "pause":
+        yamaha_input.pause()
+    elif playback == "next":
+        yamaha_input.next_track()
+    elif playback == "previous":
+        yamaha_input.previous_track()
+
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def __init__(self, request, client_address, server):
+        self._yamahaSystem = YamahaSystem()
         self.config = YamahaConfig("config.json")
         self.inputOrZoneNameRegExp = re.compile("/([^/]+)/[^/]+$")
         super().__init__(request, client_address, server)
@@ -43,42 +60,48 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self.config.read_field("location_info"))
         elif parsed_path.endswith("getStatus"):
             zone_name = self._get_zone_name(parsed_path)
-            self._send_json(self.config.zone_info(zone_name))
+            self._send_json(self._yamahaSystem.get_zone(zone_name))
         elif parsed_path.endswith("getPlayInfo"):
-            self._send_json(self.config.read_play_info(self._get_input_type(parsed_path)))
+            input_type = self._get_input_type(parsed_path)
+            self._send_json(self._yamahaSystem.get_input(input_type).play_info())
+
         elif parsed_path.endswith("system/getFeatures"):
             self._send_json(self.config.get_system_features())
 
         elif parsed_path.endswith("setInput"):
             zone_name = self._get_zone_name(parsed_path)
-            self.config.set_zone_param(zone_name, "input", query["input"])
+            self._yamahaSystem.get_zone(zone_name).input_name = query["input"]
             self._send_success()
         elif parsed_path.endswith("setMute"):
             zone_name = self._get_zone_name(parsed_path)
-            self.config.set_zone_param(zone_name, "mute", to_boolean(query["enable"]))
+            self._yamahaSystem.get_zone(zone_name).mute = to_boolean(query["enable"])
             self._send_success()
         elif parsed_path.endswith("setVolume"):
             zone_name = self._get_zone_name(parsed_path)
-            self.config.set_zone_param(zone_name, "volume", int(query["volume"]))
+            self._yamahaSystem.get_zone(zone_name).volume = int(query["volume"])
             self._send_success()
         elif parsed_path.endswith("setPower"):
             zone_name = self._get_zone_name(parsed_path)
-            self.config.set_zone_param(zone_name, "power", query["power"])
+            self._yamahaSystem.get_zone(zone_name).set_power(query["power"])
             self._send_success()
+
         elif parsed_path.endswith("toggleRepeat"):
-            self.config.toggle_repeat(self._get_input_type(parsed_path))
+            input_type = self._get_input_type(parsed_path)
+            self._yamahaSystem.get_input(input_type).toggle_repeat()
             self._send_success()
         elif parsed_path.endswith("toggleShuffle"):
-            self.config.toggle_shuffle(self._get_input_type(parsed_path))
+            input_type = self._get_input_type(parsed_path)
+            self._yamahaSystem.get_input(input_type).toggle_shuffle()
             self._send_success()
         elif parsed_path.endswith("setPlayback"):
             if query["playback"] == "track_select":
-                self.config.set_cd_track_number(query["num"])
+                self._yamahaSystem.cd().set_track_num(int(query["num"]))
             else:
-                self.config.set_playback(self._get_input_type(parsed_path), query["playback"])
+                input_type = self._get_input_type(parsed_path)
+                set_playback(self._yamahaSystem.get_input(input_type), query["playback"])
             self._send_success()
         elif parsed_path.endswith("switchPreset"):
-            self.config.set_switch_preset(query["dir"])
+            # TODO: presets
             self._send_success()
         else:
             print(f"Unknown request: {self.path}")
