@@ -35,7 +35,7 @@ class YamahaPlaylist(object):
         # 1. Определим какой сейчас играет трек: self._current_track_index
         # 2. Выставим соответствующее время проигрывания: self._play_time
         if self._play_state != PlayState.play:
-            return
+            return self._current_track_index, self._play_time_sec
 
         elapsed_time_sec = current_time_sec - self._last_sync_sec
         self._last_sync_sec = current_time_sec

@@ -60,7 +60,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self.config.read_field("location_info"))
         elif parsed_path.endswith("getStatus"):
             zone_name = self._get_zone_name(parsed_path)
-            self._send_json(self._yamahaSystem.get_zone(zone_name))
+            self._send_json(self._yamahaSystem.get_zone(zone_name).status())
         elif parsed_path.endswith("getPlayInfo"):
             input_type = self._get_input_type(parsed_path)
             self._send_json(self._yamahaSystem.get_input(input_type).play_info())

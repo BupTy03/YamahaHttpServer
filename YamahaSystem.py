@@ -11,9 +11,9 @@ class YamahaSystem(object):
     def __init__(self):
         self._zones = [
             YamahaZone(name="main", input_name="spotify", mute=False, power="on", volume=5),
-            YamahaZone(name="zone1", input_name="airplay", mute=True, power="off", volume=0),
-            YamahaZone(name="zone2", input_name="juke", mute=False, power="off", volume=1),
-            YamahaZone(name="zone3", input_name="tidal", mute=False, power="off", volume=100)
+            YamahaZone(name="zone1", input_name="airplay", mute=True, power="standby", volume=0),
+            YamahaZone(name="zone2", input_name="juke", mute=False, power="standby", volume=1),
+            YamahaZone(name="zone3", input_name="tidal", mute=False, power="standby", volume=100)
         ]
 
         self._netusb = YamahaNetusb(YamahaPlaylist([
