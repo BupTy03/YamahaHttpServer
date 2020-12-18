@@ -53,12 +53,12 @@ class YamahaPlaylist(object):
             return self._current_track_index, self._play_time_sec
 
         # self._repeat_mode == RepeatMode.ALL
-        while elapsed_time_sec > current_track.total_time:
-            elapsed_time_sec -= current_track.total_time
+        self._play_time_sec += elapsed_time_sec
+        while self._play_time_sec > current_track.total_time:
+            self._play_time_sec -= current_track.total_time
             self._current_track_index = (self._current_track_index + 1) % self.count_tracks()
             current_track = self._tracks[self._tracks_indexes[self._current_track_index]]
 
-        self._play_time_sec += elapsed_time_sec
         return self._current_track_index, self._play_time_sec
 
     def play_state(self):
@@ -157,3 +157,18 @@ class TestYamahaPlaylist(unittest.TestCase):
         self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
 
+    def test_sync_after_first_track(self):
+        # после проигрывания первого трека - запускается следующий
+        play_time = 164 + 3
+        self._yamahaPlaylist.play()
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self.assertEqual(1, self._yamahaPlaylist._current_track_index)
+        self.assertEqual(3, self._yamahaPlaylist._play_time_sec)
+
+    def test_sync_after_second_track(self):
+        # после проигрывания первого и второго треков - запускается третий
+        play_time = 164 + 168 + 5
+        self._yamahaPlaylist.play()
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self.assertEqual(2, self._yamahaPlaylist._current_track_index)
+        self.assertEqual(5, self._yamahaPlaylist._play_time_sec)

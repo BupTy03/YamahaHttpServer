@@ -118,7 +118,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    httpd = HTTPServer(("localhost", 80), SimpleHTTPRequestHandler)
+    httpd = HTTPServer(("", 80), SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 
