@@ -1,3 +1,4 @@
+import json
 from YamahaZone import YamahaZone
 from YamahaNetusb import YamahaNetusb
 from YamahaTuner import YamahaTuner
@@ -6,35 +7,62 @@ from YamahaTrack import YamahaTrack
 from YamahaPlaylist import YamahaPlaylist
 
 
+def load_zones(data: dict):
+    zones_info = data["zones_info"]
+    zones = []
+    for key, value in zones_info.items():
+        zones.append(YamahaZone(name=key,
+                                input_name=value["input"],
+                                mute=value["mute"],
+                                power=value["power"],
+                                volume=value["volume"]))
+    return zones
+
+
+def load_playlist(playlist: list):
+    result = []
+    for item in playlist:
+        result.append(YamahaTrack(track=item["track"],
+                                  album=item["album"],
+                                  artist=item["artist"],
+                                  total_time=item["total_time"]))
+    return result
+
+
+def store_zones_info(zones_list: list):
+    result = {}
+    for zone in zones_list:
+        result[zone.name] = zone.status()
+    return result
+
+
 class YamahaSystem(object):
 
     def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(YamahaSystem, cls).__new__(cls)
-            cls.instance._zones = [
-                YamahaZone(name="main", input_name="spotify", mute=False, power="on", volume=5),
-                YamahaZone(name="zone1", input_name="airplay", mute=True, power="standby", volume=0),
-                YamahaZone(name="zone2", input_name="juke", mute=False, power="standby", volume=1),
-                YamahaZone(name="zone3", input_name="tidal", mute=False, power="standby", volume=100)
-            ]
-
-            cls.instance._netusb = YamahaNetusb(YamahaPlaylist([
-                YamahaTrack(track="We Will Rock You", album="News of the world", artist="Freddie Mercury",
-                            total_time=121),
-                YamahaTrack(track="We Are the Champions", album="News of the world", artist="Freddie Mercury",
-                            total_time=179),
-                YamahaTrack(track="Sheer Heart Attack", album="News of the world", artist="Freddie Mercury",
-                            total_time=204)
-            ]))
-            cls.instance._tuner = YamahaTuner()
-            cls.instance._cd = YamahaCD(YamahaPlaylist([
-                YamahaTrack(track="Ben", album="Ben", artist="Michael Jackson", total_time=164),
-                YamahaTrack(track="The Greatest Show on Earth", album="Ben", artist="Michael Jackson", total_time=168),
-                YamahaTrack(track="People Make the World Go Round", album="Ben", artist="Michael Jackson",
-                            total_time=195)
-            ]))
-
         return cls.instance
+
+    @classmethod
+    def load(cls, filename):
+        if not hasattr(cls, "instance"):
+            data = None
+            with open(filename, "r") as file:
+                data = json.load(file)
+
+            cls.instance = super(YamahaSystem, cls).__new__(cls)
+            cls.instance._zones = load_zones(data)
+            cls.instance._netusb = YamahaNetusb(YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
+            cls.instance._tuner = YamahaTuner()
+            cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
+
+    @classmethod
+    def store(cls, filename):
+        data = None
+        with open(filename, "r") as file:
+            data = json.load(file)
+
+        data["zones_info"] = store_zones_info
+        with open(filename, "w") as file:
+            file.write(json.dumps(data, indent=4))
 
     def get_zone(self, name):
         zones = list(filter(lambda z: z.name == name, self._zones))

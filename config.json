@@ -1,12 +1,4 @@
 {
-    "location_info": {
-        "zone_list": {
-            "main": true,
-            "zone1": false,
-            "zone2": false,
-            "zone3": false
-        }
-    },
     "zones_info": {
         "main": {
             "input": "spotify",
@@ -97,101 +89,6 @@
                 "artist": "Michael Jackson",
                 "track": "Everybody's Somebody's Fool",
                 "total_time": 179
-            }
-        ]
-    },
-
-    "play_info": {
-        "tuner": {
-            "band": "fm",
-            "am": {
-                "freq": 174000
-            },
-            "fm": {
-                "freq": 174001
-            },
-            "dab": {
-                "freq": 174002
-            },
-            "switch_preset": "previous"
-        },
-        "netusb": {
-            "playback": "play",
-            "repeat": "one",
-            "shuffle": "albums",
-            "play_time": 200,
-            "total_time": 202,
-            "album": "News of the world",
-            "artist": "Freddie Mercury",
-            "track": "We Are the Champions"
-        },
-        "cd": {
-            "playback": "pause",
-            "repeat": "off",
-            "shuffle": "folder",
-            "play_time": 204,
-            "total_time": 207,
-            "album": "News of the world",
-            "artist": "Freddie Mercury",
-            "track": "We Are the Champions",
-            "disc_time": 6,
-            "track_number": 5,
-            "total_tracks": 10
-        }
-    },
-    "system": {
-        "input_list": [
-            {
-                "id": "cd",
-                "play_info_type": "cd"
-            },
-            {
-                "id": "tuner",
-                "play_info_type": "tuner"
-            },
-            {
-                "id": "am",
-                "play_info_type": "tuner"
-            },
-            {
-                "id": "fm",
-                "play_info_type": "tuner"
-            },
-            {
-                "id": "dab",
-                "play_info_type": "tuner"
-            },
-            {
-                "id": "net_radio",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "napster",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "spotify",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "juke",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "deezer",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "airplay",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "alexa",
-                "play_info_type": "netusb"
-            },
-            {
-                "id": "bluetooth",
-                "play_info_type": "netusb"
             }
         ]
     }

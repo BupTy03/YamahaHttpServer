@@ -56,9 +56,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         parsed_path = parsed.path
         query = dict(urllib.parse.parse_qsl(parsed.query))
 
-        if parsed_path.endswith("getLocationInfo"):
-            self._send_json(self.config.read_field("location_info"))
-        elif parsed_path.endswith("getStatus"):
+        if parsed_path.endswith("getStatus"):
             zone_name = self._get_zone_name(parsed_path)
             self._send_json(self._yamahaSystem.get_zone(zone_name).status())
         elif parsed_path.endswith("getPlayInfo"):
@@ -123,4 +121,7 @@ def main():
 
 
 if __name__ == "__main__":
+    config_file = "config.json"
+    YamahaSystem.load(config_file)
     main()
+    YamahaSystem.store(config_file)
