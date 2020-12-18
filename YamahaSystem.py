@@ -1,7 +1,7 @@
 import json
 from YamahaZone import YamahaZone
-from YamahaNetusb import YamahaNetusb
-from YamahaTuner import YamahaTuner
+from YamahaNetusb import YamahaNetusb, YamahaNetusbPreset
+from YamahaTuner import YamahaTuner, YamahaTunerPreset
 from YamahaCD import YamahaCD
 from YamahaTrack import YamahaTrack
 from YamahaPlaylist import YamahaPlaylist
@@ -36,6 +36,35 @@ def store_zones_info(zones_list: list):
     return result
 
 
+def load_tuner_presets(presets_list: list):
+    result = []
+    for item in presets_list:
+        result.append(YamahaTunerPreset(band=item["band"], number=item["number"]))
+    return result
+
+
+def store_tuner_presets_list(presets: list):
+    result = []
+    for item in presets:
+        result.append({"band": item.band(), "number": item.number()})
+    return result
+
+
+def load_netusb_presets(presets_list: list):
+    result = []
+    for item in presets_list:
+        result.append(YamahaNetusbPreset(input_name=item["input"], text=item["text"]))
+    return result
+
+
+def store_netusb_presets_list(presets: list):
+    result = []
+    for item in presets:
+        result.append({"input": item.input, "text": item.text})
+    return result
+
+
+
 class YamahaSystem(object):
 
     def __new__(cls):
@@ -50,8 +79,10 @@ class YamahaSystem(object):
 
             cls.instance = super(YamahaSystem, cls).__new__(cls)
             cls.instance._zones = load_zones(data)
-            cls.instance._netusb = YamahaNetusb(YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
-            cls.instance._tuner = YamahaTuner()
+            cls.instance._netusb = YamahaNetusb(load_netusb_presets(data["presets"]["netusb"]),
+                                                YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
+
+            cls.instance._tuner = YamahaTuner(load_tuner_presets(data["presets"]["tuner"]))
             cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
 
     @classmethod
@@ -61,6 +92,8 @@ class YamahaSystem(object):
             data = json.load(file)
 
         data["zones_info"] = store_zones_info(cls.instance._zones)
+        data["presets"]["tuner"] = store_tuner_presets_list(cls.instance._tuner.presets_list())
+        data["presets"]["netusb"] = store_netusb_presets_list(cls.instance._netusb.presets_list())
         with open(filename, "w") as file:
             file.write(json.dumps(data, indent=4))
 

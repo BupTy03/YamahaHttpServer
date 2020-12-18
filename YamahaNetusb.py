@@ -2,13 +2,20 @@ from YamahaPlaylist import YamahaPlaylist
 from YamahaTrack import YamahaTrack
 
 
+class YamahaNetusbPreset:
+    def __init__(self, input_name="unknown", text=""):
+        self.input = input_name
+        self.text = text
+
+
 class YamahaNetusb(object):
 
-    def __init__(self, playlist: YamahaPlaylist):
+    def __init__(self, presets: list, playlist: YamahaPlaylist):
         self._input = "spotify"
         self._repeat_mode = "off"   # "off" / "one" / "all"
         self._shuffle_mode = "off"  # "off" / "on" / "songs" / "albums"
-        self._playlist = playlist
+        self._playlist = playlist,
+        self._presets = presets
 
     def play(self):
         self._playlist.play()
@@ -53,6 +60,9 @@ class YamahaNetusb(object):
             self._playlist.shuffle_off()
         else:
             self._playlist.shuffle_on()
+
+    def presets_list(self):
+        return self._presets
 
     def play_info(self):
         track_index, play_time = self._playlist.sync()

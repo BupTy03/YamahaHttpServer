@@ -90,5 +90,47 @@
                 "total_time": 179
             }
         ]
+    },
+    "presets": {
+        "tuner": [
+            {
+                "band": "am",
+                "number": 123
+            },
+            {
+                "band": "am",
+                "number": 456
+            },
+            {
+                "band": "fm",
+                "number": 789
+            },
+            {
+                "band": "fm",
+                "number": 3259
+            },
+            {
+                "band": "dab",
+                "number": 15
+            }
+        ],
+        "netusb": [
+            {
+                "input": "spotify",
+                "text": ""
+            },
+            {
+                "input": "airplay",
+                "text": ""
+            },
+            {
+                "input": "juke",
+                "text": ""
+            },
+            {
+                "input": "tidal",
+                "text": ""
+            }
+        ]
     }
 }
