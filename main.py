@@ -1,10 +1,11 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from YamahaConfig import YamahaConfig, to_boolean
-from YamahaSystem import YamahaSystem
+from YamahaSystem import YamahaSystem, load_yamaha
 
 import urllib
 import json
 import re
+import threading
 
 
 def set_playback(yamaha_input, playback):
@@ -115,13 +116,22 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 
+class make_server:
+    def __enter__(self):
+        self.httpd = HTTPServer(("", 80), SimpleHTTPRequestHandler)
+        self.current_thread = threading.Thread(target=self.httpd.serve_forever)
+        self.current_thread.start()
+
+    def __exit__(self, type, value, traceback):
+        self.httpd.shutdown()
+        self.current_thread.join()
+
+
 def main():
-    httpd = HTTPServer(("", 80), SimpleHTTPRequestHandler)
-    httpd.serve_forever()
+    with load_yamaha("config.json"):
+        with make_server():
+            input("Press 'Enter' to exit\n")
 
 
 if __name__ == "__main__":
-    config_file = "config.json"
-    YamahaSystem.load(config_file)
     main()
-    YamahaSystem.store(config_file)

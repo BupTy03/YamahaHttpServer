@@ -60,7 +60,7 @@ class YamahaSystem(object):
         with open(filename, "r") as file:
             data = json.load(file)
 
-        data["zones_info"] = store_zones_info
+        data["zones_info"] = store_zones_info(cls.instance._zones)
         with open(filename, "w") as file:
             file.write(json.dumps(data, indent=4))
 
@@ -88,3 +88,15 @@ class YamahaSystem(object):
             return self.tuner()
         elif name == "cd":
             return self.cd()
+
+
+class load_yamaha:
+    def __init__(self, config_file: str):
+        self._config_file = config_file
+
+    def __enter__(self):
+        YamahaSystem.load(self._config_file)
+
+    def __exit__(self, type, value, traceback):
+        YamahaSystem.store(self._config_file)
+

@@ -9,23 +9,22 @@
         "zone1": {
             "input": "airplay",
             "mute": true,
-            "power": "off",
+            "power": "standby",
             "volume": 0
         },
         "zone2": {
             "input": "juke",
             "mute": true,
-            "power": "off",
+            "power": "standby",
             "volume": 1
         },
         "zone3": {
             "input": "tidal",
             "mute": true,
-            "power": "off",
+            "power": "standby",
             "volume": 100
         }
     },
-
     "playlist": {
         "netusb": [
             {
