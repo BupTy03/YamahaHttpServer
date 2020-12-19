@@ -6,6 +6,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from YamahaConfig import YamahaConfig, to_boolean
 from YamahaSystem import YamahaSystem, load_yamaha
+from YamahaTuner import YamahaTuner, switch_preset
 
 
 def set_playback(yamaha_input, playback: str):
@@ -99,7 +100,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 set_playback(self._yamahaSystem.get_input(input_type), query["playback"])
             self._send_success()
         elif parsed_path.endswith("switchPreset"):
-            # TODO: presets
+            switch_preset(self._yamahaSystem.tuner(), query["dir"])
             self._send_success()
         else:
             print(f"Unknown request: {self.path}")

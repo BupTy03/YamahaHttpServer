@@ -37,13 +37,32 @@ class YamahaTuner:
             "dab": 1000
         }
         self._dab_service_id = 0
+        self._current_preset = 0
         self._presets = presets
+
+    def _apply_preset(self, preset):
+        self._band = preset.band()
+        self._frequencies[self._band] = preset.number()
 
     def frequency(self):
         return self._frequencies[self._band]
 
     def set_frequency(self, freq: int):
         self._frequencies[self._band] = freq
+
+    def next_preset(self):
+        self._current_preset += 1
+        if self._current_preset >= len(self._presets):
+            self._current_preset = 0
+
+        self._apply_preset(self._presets[self._current_preset])
+
+    def previous_preset(self):
+        self._current_preset -= 1
+        if self._current_preset < 0:
+            self._current_preset = len(self._presets) - 1
+
+        self._apply_preset(self._presets[self._current_preset])
 
     def next_dab(self):
         self._dab_service_id = min(self._dab_service_id + 1, 65)
@@ -67,3 +86,11 @@ class YamahaTuner:
     def store_preset(self, num: int):
         assert 0 <= num < len(self._presets)
         self._presets[num] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
+
+
+def switch_preset(tuner: YamahaTuner, direction: str):
+    assert direction in ("next", "previous")
+    if direction == "next":
+        tuner.next_preset()
+    elif direction == "previous":
+        tuner.previous_preset()
