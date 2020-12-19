@@ -102,6 +102,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         elif parsed_path.endswith("switchPreset"):
             switch_preset(self._yamahaSystem.tuner(), query["dir"])
             self._send_success()
+        elif parsed_path.endswith("recallPreset"):
+            self._yamahaSystem.tuner().recall_preset(zone=self._yamahaSystem.get_zone(query["zone"]),
+                                                     band=query["band"],
+                                                     num=query["num"])
         else:
             print(f"Unknown request: {self.path}")
             self.send_response(404)

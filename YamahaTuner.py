@@ -1,3 +1,6 @@
+from YamahaZone import YamahaZone
+
+
 def is_valid_band(band: str):
     return band in ("am", "fm", "dab", "unknown")
 
@@ -86,6 +89,17 @@ class YamahaTuner:
     def store_preset(self, num: int):
         assert 0 <= num < len(self._presets)
         self._presets[num] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
+
+    def recall_preset(self, zone: YamahaZone, band: str, num: int):
+        assert is_valid_band(band)
+        assert 0 <= num < len(self._presets)
+
+        if band == "unknown":
+            return
+
+        zone.input_name = band
+        self._apply_preset(self._presets[num])
+
 
 
 def switch_preset(tuner: YamahaTuner, direction: str):
