@@ -8,7 +8,7 @@ from YamahaConfig import YamahaConfig, to_boolean
 from YamahaSystem import YamahaSystem, load_yamaha
 
 
-def set_playback(yamaha_input, playback):
+def set_playback(yamaha_input, playback: str):
     assert playback in ("play", "stop", "pause", "next", "previous")
 
     if playback == "play":
@@ -30,13 +30,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.inputOrZoneNameRegExp = re.compile("/([^/]+)/[^/]+$")
         super().__init__(request, client_address, server)
 
-    def _get_zone_name(self, path):
+    def _get_zone_name(self, path: str):
         groups = re.findall(self.inputOrZoneNameRegExp, path)
         if groups and len(groups) > 0:
             return groups[0]
         return ""
 
-    def _get_input_type(self, path):
+    def _get_input_type(self, path: str):
         groups = re.findall(self.inputOrZoneNameRegExp, path)
         if groups and len(groups) > 0:
             return groups[0]

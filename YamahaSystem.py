@@ -70,7 +70,7 @@ class YamahaSystem:
         return cls.instance
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename: str):
         data = None
         with open(filename, "r") as file:
             data = json.load(file)
@@ -84,7 +84,7 @@ class YamahaSystem:
         cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
 
     @classmethod
-    def store(cls, filename):
+    def store(cls, filename: str):
         data = None
         with open(filename, "r") as file:
             data = json.load(file)
