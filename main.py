@@ -1,11 +1,11 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from YamahaConfig import YamahaConfig, to_boolean
-from YamahaSystem import YamahaSystem, load_yamaha
-
 import urllib
 import json
 import re
 import threading
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from YamahaConfig import YamahaConfig, to_boolean
+from YamahaSystem import YamahaSystem, load_yamaha
 
 
 def set_playback(yamaha_input, playback):
@@ -24,7 +24,6 @@ def set_playback(yamaha_input, playback):
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-
     def __init__(self, request, client_address, server):
         self._yamahaSystem = YamahaSystem()
         self.config = YamahaConfig("config.json")

@@ -2,8 +2,7 @@ from YamahaPlaylist import YamahaPlaylist
 from YamahaTrack import YamahaTrack
 
 
-class YamahaCD(object):
-
+class YamahaCD:
     def __init__(self, playlist: YamahaPlaylist):
         self._repeat_mode = "off"   # "off" / "one" / "all" / "folder" / "a-b"
         self._shuffle_mode = "off"  # "off" / "on" / "folder" / "program"

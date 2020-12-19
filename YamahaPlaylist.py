@@ -1,6 +1,7 @@
 import random
 import time
 import unittest
+
 from enum import Enum
 from YamahaTrack import YamahaTrack
 
@@ -18,8 +19,7 @@ class PlayState(Enum):
     pause = 2
 
 
-class YamahaPlaylist(object):
-
+class YamahaPlaylist:
     def __init__(self, tracks: list):
         self._tracks = tracks
         self._tracks_indexes = list(range(len(tracks)))

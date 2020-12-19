@@ -1,4 +1,5 @@
 import json
+
 from YamahaZone import YamahaZone
 from YamahaNetusb import YamahaNetusb, YamahaNetusbPreset
 from YamahaTuner import YamahaTuner, YamahaTunerPreset
@@ -64,26 +65,23 @@ def store_netusb_presets_list(presets: list):
     return result
 
 
-
-class YamahaSystem(object):
-
+class YamahaSystem:
     def __new__(cls):
         return cls.instance
 
     @classmethod
     def load(cls, filename):
-        if not hasattr(cls, "instance"):
-            data = None
-            with open(filename, "r") as file:
-                data = json.load(file)
+        data = None
+        with open(filename, "r") as file:
+            data = json.load(file)
 
-            cls.instance = super(YamahaSystem, cls).__new__(cls)
-            cls.instance._zones = load_zones(data)
-            cls.instance._netusb = YamahaNetusb(load_netusb_presets(data["presets"]["netusb"]),
-                                                YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
+        cls.instance = super(YamahaSystem, cls).__new__(cls)
+        cls.instance._zones = load_zones(data)
+        cls.instance._netusb = YamahaNetusb(load_netusb_presets(data["presets"]["netusb"]),
+                                            YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
 
-            cls.instance._tuner = YamahaTuner(load_tuner_presets(data["presets"]["tuner"]))
-            cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
+        cls.instance._tuner = YamahaTuner(load_tuner_presets(data["presets"]["tuner"]))
+        cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
 
     @classmethod
     def store(cls, filename):

@@ -1,8 +1,10 @@
+def is_valid_power_mode(power: str):
+    return power in ("on", "standby")
 
-class YamahaZone(object):
 
+class YamahaZone:
     def __init__(self, name: str, input_name: str, mute: bool, power: str, volume: int):
-        assert power in ("on", "standby")
+        assert is_valid_power_mode(power)
         self.name = name
         self.input_name = input_name
         self.mute = mute
@@ -10,7 +12,7 @@ class YamahaZone(object):
         self.volume = volume
 
     def set_power(self, power: str):
-        assert power in ("on", "standby")
+        assert is_valid_power_mode(power)
         self.power = power
 
     def status(self):

@@ -8,8 +8,7 @@ class YamahaNetusbPreset:
         self.text = text
 
 
-class YamahaNetusb(object):
-
+class YamahaNetusb:
     def __init__(self, presets: list, playlist: YamahaPlaylist):
         self._input = "spotify"
         self._repeat_mode = "off"   # "off" / "one" / "all"

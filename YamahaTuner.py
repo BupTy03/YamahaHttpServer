@@ -4,14 +4,14 @@ def is_valid_band(band: str):
 
 class YamahaTunerPreset:
     def __init__(self, band="unknown", number=0):
-        self._band = band
-        assert is_valid_band(self._band)
+        assert is_valid_band(band)
+        assert number >= 0
 
+        self._band = band
         self._number = number
-        assert self._number >= 0
 
     def set_band(self, band: str):
-        assert is_valid_band(self._band)
+        assert is_valid_band(band)
         self._band = band
 
     def band(self):
@@ -25,7 +25,7 @@ class YamahaTunerPreset:
         return self._number
 
 
-class YamahaTuner(object):
+class YamahaTuner:
     MIN_DAB_FREQ = 174000
     MAX_DAB_FREQ = 240000
 
