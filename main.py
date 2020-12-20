@@ -4,9 +4,13 @@ import re
 import threading
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from YamahaConfig import YamahaConfig, to_boolean
 from YamahaSystem import YamahaSystem, load_yamaha
 from YamahaTuner import YamahaTuner, switch_preset
+
+
+def to_boolean(value: str):
+    assert value in ("true", "false")
+    return value == "true"
 
 
 def set_playback(yamaha_input, playback: str):
@@ -27,18 +31,17 @@ def set_playback(yamaha_input, playback: str):
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         self._yamahaSystem = YamahaSystem()
-        self.config = YamahaConfig("config.json")
-        self.inputOrZoneNameRegExp = re.compile("/([^/]+)/[^/]+$")
+        self._inputOrZoneNameRegExp = re.compile("/([^/]+)/[^/]+$")
         super().__init__(request, client_address, server)
 
     def _get_zone_name(self, path: str):
-        groups = re.findall(self.inputOrZoneNameRegExp, path)
+        groups = re.findall(self._inputOrZoneNameRegExp, path)
         if groups and len(groups) > 0:
             return groups[0]
         return ""
 
     def _get_input_type(self, path: str):
-        groups = re.findall(self.inputOrZoneNameRegExp, path)
+        groups = re.findall(self._inputOrZoneNameRegExp, path)
         if groups and len(groups) > 0:
             return groups[0]
         return ""
@@ -63,9 +66,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         elif parsed_path.endswith("getPlayInfo"):
             input_type = self._get_input_type(parsed_path)
             self._send_json(self._yamahaSystem.get_input(input_type).play_info())
-
-        elif parsed_path.endswith("system/getFeatures"):
-            self._send_json(self.config.get_system_features())
 
         elif parsed_path.endswith("setInput"):
             zone_name = self._get_zone_name(parsed_path)
@@ -120,7 +120,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 
-class make_server:
+class start_server:
     def __enter__(self):
         self.httpd = HTTPServer(("", 80), SimpleHTTPRequestHandler)
         self.current_thread = threading.Thread(target=self.httpd.serve_forever)
@@ -133,7 +133,7 @@ class make_server:
 
 def main():
     with load_yamaha("config.json"):
-        with make_server():
+        with start_server():
             input("Press 'Enter' to exit\n")
 
 
