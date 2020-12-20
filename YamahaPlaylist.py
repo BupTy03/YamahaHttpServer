@@ -111,7 +111,12 @@ class YamahaPlaylist:
         self._current_track_index = self._tracks_indexes.index(self._current_track_index)
 
     def shuffle_off(self):
-        self._tracks_indexes = list(range(self.count_tracks()))
+        # восстанавливаем порядок следования индексов треков:
+        # 1. индекс трека равен порядковому номеру трека
+        self._current_track_index = self._tracks_indexes[self._current_track_index]
+
+        # 2. индексы треков в списке воспроизведения расположены друг за другом по возрастанию
+        self._tracks_indexes.sort()
 
     def repeat_off(self):
         self._repeat_mode = RepeatMode.OFF
@@ -187,7 +192,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_off()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + self._yamahaPlaylist.summary_time() + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
+                                       self._yamahaPlaylist.summary_time() + play_time)
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.stop, self._yamahaPlaylist._play_state)
@@ -198,7 +204,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_one()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + self._yamahaPlaylist.current_track().total_time * 3 + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
+                                       self._yamahaPlaylist.current_track().total_time * 3 + play_time)
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
@@ -209,7 +216,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_all()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + self._yamahaPlaylist.summary_time() + play_time)
+        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
+                                       self._yamahaPlaylist.summary_time() + play_time)
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
@@ -262,11 +270,12 @@ class TestYamahaPlaylist(unittest.TestCase):
         self._yamahaPlaylist.play()
         self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
 
-        # порядковый номер текущего трека после "перемешивания" не меняется
+        # порядковый индекс текущего трека после "перемешивания" не меняется
         # меняется лишь порядок воспроизведения
-        # также не меняется текущее время воспроизведения и состояние воспроизведения
         self._yamahaPlaylist.shuffle_on()
         self.assertEqual(1, self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index])
+
+        # также не меняется текущее время воспроизведения и состояние воспроизведения
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
 
@@ -276,10 +285,16 @@ class TestYamahaPlaylist(unittest.TestCase):
         self._yamahaPlaylist.shuffle_on()
         current_track_index = self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index]
         self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
-        self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
+
+        # порядковый индекс текущего трека после восстановления порядка не меняется
         self._yamahaPlaylist.shuffle_off()
-        self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(current_track_index, self._yamahaPlaylist._current_track_index)
-        self.assertEqual(current_track_index, self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index])
+
+        # после восстановления порядка, индекс текущего трека равен элементу по этому индексу в списке воспроизведения
+        self.assertEqual(self._yamahaPlaylist._current_track_index,
+                         self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index])
+
+        # также не меняется текущее время воспроизведения и состояние воспроизведения
+        self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
 
