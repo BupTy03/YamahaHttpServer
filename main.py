@@ -1,6 +1,5 @@
 import urllib
 import json
-import re
 import threading
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -28,23 +27,19 @@ def set_playback(yamaha_input, playback: str):
         yamaha_input.previous_track()
 
 
+def get_sender_from_path(path: str):
+    # пример пути: "/YamahaExtendedControl/v1/main/getStatus"
+    # разобьётся на: ['', 'YamahaExtendedControl', 'v1', 'main', 'getStatus']
+    # элемент под индексом 3 ('main' - имя зоны) - то что нам нужно
+    sender = path.split("/")[3]
+    assert sender in ("main", "zone1", "zone2", "zone3", "netusb", "tuner", "cd")
+    return sender
+
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         self._yamahaSystem = YamahaSystem()
-        self._inputOrZoneNameRegExp = re.compile("/([^/]+)/[^/]+$")
         super().__init__(request, client_address, server)
-
-    def _get_zone_name(self, path: str):
-        groups = re.findall(self._inputOrZoneNameRegExp, path)
-        if groups and len(groups) > 0:
-            return groups[0]
-        return ""
-
-    def _get_input_type(self, path: str):
-        groups = re.findall(self._inputOrZoneNameRegExp, path)
-        if groups and len(groups) > 0:
-            return groups[0]
-        return ""
 
     def _send_json(self, json_answer):
         self.send_response(200)
@@ -58,54 +53,49 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def _make_response(self):
         parsed = urllib.parse.urlparse(self.path)
         parsed_path = parsed.path
-        query = dict(urllib.parse.parse_qsl(parsed.query))
+        query_params = dict(urllib.parse.parse_qsl(parsed.query))
+        sender = get_sender_from_path(parsed_path)
 
         if parsed_path.endswith("getStatus"):
-            zone_name = self._get_zone_name(parsed_path)
-            self._send_json(self._yamahaSystem.get_zone(zone_name).status())
+            self._send_json(self._yamahaSystem.get_zone(sender).status())
         elif parsed_path.endswith("getPlayInfo"):
-            input_type = self._get_input_type(parsed_path)
-            self._send_json(self._yamahaSystem.get_input(input_type).play_info())
+            self._send_json(self._yamahaSystem.get_input(sender).play_info())
 
         elif parsed_path.endswith("setInput"):
-            zone_name = self._get_zone_name(parsed_path)
-            self._yamahaSystem.get_zone(zone_name).input_name = query["input"]
+            self._yamahaSystem.get_zone(sender).input_name = query_params["input"]
             self._send_success()
         elif parsed_path.endswith("setMute"):
-            zone_name = self._get_zone_name(parsed_path)
-            self._yamahaSystem.get_zone(zone_name).mute = to_boolean(query["enable"])
+            self._yamahaSystem.get_zone(sender).mute = to_boolean(query_params["enable"])
             self._send_success()
         elif parsed_path.endswith("setVolume"):
-            zone_name = self._get_zone_name(parsed_path)
-            self._yamahaSystem.get_zone(zone_name).volume = int(query["volume"])
+            self._yamahaSystem.get_zone(sender).volume = int(query_params["volume"])
             self._send_success()
         elif parsed_path.endswith("setPower"):
-            zone_name = self._get_zone_name(parsed_path)
-            self._yamahaSystem.get_zone(zone_name).set_power(query["power"])
+            self._yamahaSystem.get_zone(sender).set_power(query_params["power"])
             self._send_success()
 
         elif parsed_path.endswith("toggleRepeat"):
-            input_type = self._get_input_type(parsed_path)
-            self._yamahaSystem.get_input(input_type).toggle_repeat()
+            self._yamahaSystem.get_input(sender).toggle_repeat()
             self._send_success()
         elif parsed_path.endswith("toggleShuffle"):
-            input_type = self._get_input_type(parsed_path)
-            self._yamahaSystem.get_input(input_type).toggle_shuffle()
+            self._yamahaSystem.get_input(sender).toggle_shuffle()
             self._send_success()
         elif parsed_path.endswith("setPlayback"):
-            if query["playback"] == "track_select":
-                self._yamahaSystem.cd().set_track_num(int(query["num"]))
+            if query_params["playback"] == "track_select":
+                assert sender == "cd"
+                self._yamahaSystem.cd().set_track_num(int(query_params["num"]))
             else:
-                input_type = self._get_input_type(parsed_path)
-                set_playback(self._yamahaSystem.get_input(input_type), query["playback"])
+                set_playback(self._yamahaSystem.get_input(sender), query_params["playback"])
             self._send_success()
         elif parsed_path.endswith("switchPreset"):
-            switch_preset(self._yamahaSystem.tuner(), query["dir"])
+            assert sender == "tuner"
+            switch_preset(self._yamahaSystem.tuner(), query_params["dir"])
             self._send_success()
         elif parsed_path.endswith("recallPreset"):
-            self._yamahaSystem.tuner().recall_preset(zone=self._yamahaSystem.get_zone(query["zone"]),
-                                                     band=query["band"],
-                                                     num=query["num"])
+            assert sender == "tuner"
+            self._yamahaSystem.tuner().recall_preset(zone=self._yamahaSystem.get_zone(query_params["zone"]),
+                                                     band=query_params["band"],
+                                                     num=query_params["num"])
         else:
             print(f"Unknown request: {self.path}")
             self.send_response(404)
