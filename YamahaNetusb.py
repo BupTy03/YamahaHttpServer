@@ -63,6 +63,10 @@ class YamahaNetusb:
     def presets_list(self):
         return self._presets
 
+    def store_preset(self, num: int):
+        assert 0 <= num < len(self._presets)
+        self._presets[num] = YamahaNetusbPreset(input_name=self._input, text=f"Preset for {self._input}")
+
     def play_info(self):
         track_index, play_time = self._playlist.sync()
         current_track = self._playlist.current_track()

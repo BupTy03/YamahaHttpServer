@@ -101,7 +101,6 @@ class YamahaTuner:
         self._apply_preset(self._presets[num])
 
 
-
 def switch_preset(tuner: YamahaTuner, direction: str):
     assert direction in ("next", "previous")
     if direction == "next":

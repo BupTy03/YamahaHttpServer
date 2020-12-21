@@ -95,7 +95,31 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             assert sender == "tuner"
             self._yamahaSystem.tuner().recall_preset(zone=self._yamahaSystem.get_zone(query_params["zone"]),
                                                      band=query_params["band"],
-                                                     num=query_params["num"])
+                                                     num=int(query_params["num"]))
+            self._send_success()
+        elif parsed_path.endswith("setDabService"):
+            assert sender == "tuner"
+
+            direction = query_params["dir"]
+            assert direction in ("previous", "next")
+
+            if direction == "previous":
+                self._yamahaSystem.tuner().prev_dab()
+            elif direction == "next":
+                self._yamahaSystem.tuner().next_dab()
+
+            self._send_success()
+        elif parsed_path.endswith("storePreset"):
+            assert sender in ("tuner", "netusb")
+            self._yamahaSystem.get_input(sender).store_preset(int(query_params["num"]))
+            self._send_success()
+        elif parsed_path.endswith("setFreq"):
+            assert sender == "tuner"
+            assert query_params["band"] in ("am", "fm")
+            assert query_params["tuning"] == "direct"
+            self._yamahaSystem.tuner().set_frequency(int(query_params["num"]))
+            self._send_success()
+
         else:
             print(f"Unknown request: {self.path}")
             self.send_response(404)
