@@ -95,7 +95,7 @@
         "tuner": [
             {
                 "band": "am",
-                "number": 101
+                "number": 111
             },
             {
                 "band": "am",
@@ -120,8 +120,8 @@
                 "text": ""
             },
             {
-                "input": "airplay",
-                "text": ""
+                "input": "spotify",
+                "text": "Preset for spotify"
             },
             {
                 "input": "juke",
