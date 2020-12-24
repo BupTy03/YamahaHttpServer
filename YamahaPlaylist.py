@@ -96,12 +96,14 @@ class YamahaPlaylist:
         self._current_track_index += 1
         if self._current_track_index >= self.count_tracks():
             self._current_track_index = 0
+        self._play_time_sec = 0
 
     def previous_track(self):
         self.sync()
         self._current_track_index -= 1
         if self._current_track_index < 0:
             self._current_track_index = self.count_tracks() - 1
+        self._play_time_sec = 0
 
     def summary_time(self):
         return sum(self._tracks[i].total_time for i in range(self.count_tracks()))
