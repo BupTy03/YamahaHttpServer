@@ -32,6 +32,18 @@ class YamahaNetusb:
     def previous_track(self):
         self._playlist.previous_track()
 
+    def fast_reverse_start(self):
+        self._playlist.fast_reverse_start()
+
+    def fast_reverse_end(self):
+        self._playlist.fast_reverse_end()
+
+    def fast_forward_start(self):
+        self._playlist.fast_forward_start()
+
+    def fast_forward_end(self):
+        self._playlist.fast_forward_end()
+
     def toggle_repeat(self):
         next_repeat_mode = {
             "off": "one",

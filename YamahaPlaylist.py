@@ -17,10 +17,12 @@ class PlayState(Enum):
     play = 0
     stop = 1
     pause = 2
+    fast_reverse = 3
+    fast_forward = 4
 
 
 class YamahaPlaylist:
-    def __init__(self, tracks: list):
+    def __init__(self, tracks: list, whats_a_time=time.time):
         self._tracks = tracks
         self._tracks_indexes = list(range(len(tracks)))
         self._current_track_index = 0
@@ -28,18 +30,26 @@ class YamahaPlaylist:
         self._play_time_sec = 0
         self._play_state = PlayState.stop
         self._repeat_mode = RepeatMode.ALL
+        self._whats_a_time = whats_a_time  # функция для отчёта времени - подменяется в тестах
 
     def sync(self):
-        return self.sync_time(int(time.time()))
+        return self._sync_time(int(self._whats_a_time()))
 
-    def sync_time(self, current_time_sec: int):
+    def _sync_time(self, current_time_sec: int):
         # Сверим часы:
         # 1. Определим какой сейчас играет трек: self._current_track_index
         # 2. Выставим соответствующее время проигрывания: self._play_time
         elapsed_time_sec = current_time_sec - self._last_sync_sec
         self._last_sync_sec = current_time_sec
-        if self._play_state != PlayState.play:
+        if self._play_state != PlayState.play and \
+                self._play_state != PlayState.fast_reverse and \
+                self._play_state != PlayState.fast_forward:
             return self._current_track_index, self._play_time_sec
+
+        if self._play_state == PlayState.fast_reverse:
+            elapsed_time_sec *= -2
+        elif self._play_state == PlayState.fast_forward:
+            elapsed_time_sec *= 2
 
         current_track = self._tracks[self._tracks_indexes[self._current_track_index]]
         if self._repeat_mode == RepeatMode.ONE:
@@ -62,6 +72,10 @@ class YamahaPlaylist:
 
         return self._current_track_index, self._play_time_sec
 
+    def play_time(self):
+        self.sync()
+        return self._play_time_sec
+
     def play_state(self):
         self.sync()
         return self._play_state.name
@@ -78,6 +92,22 @@ class YamahaPlaylist:
         self.sync()
         self._play_state = PlayState.stop
         self._play_time_sec = 0
+
+    def fast_reverse_start(self):
+        self.sync()
+        self._play_state = PlayState.fast_reverse
+
+    def fast_reverse_end(self):
+        self.sync()
+        self._play_state = PlayState.play
+
+    def fast_forward_start(self):
+        self.sync()
+        self._play_state = PlayState.fast_forward
+
+    def fast_forward_end(self):
+        self.sync()
+        self._play_state = PlayState.play
 
     def count_tracks(self):
         return len(self._tracks)
@@ -132,11 +162,16 @@ class YamahaPlaylist:
 
 class TestYamahaPlaylist(unittest.TestCase):
     def setUp(self):
+        self._time = 0
+
+        # эта функция подменяет стандартную фунцию времени time.time() в целях тестирования
+        current_time = lambda: self._time
+
         self._yamahaPlaylist = YamahaPlaylist([
             YamahaTrack(track="Ben", album="Ben", artist="Michael Jackson", total_time=164),
             YamahaTrack(track="The Greatest Show on Earth", album="Ben", artist="Michael Jackson", total_time=168),
             YamahaTrack(track="People Make the World Go Round", album="Ben", artist="Michael Jackson", total_time=195),
-        ])
+        ], current_time)
 
     def test_summary_time(self):
         sum_time = 527
@@ -148,33 +183,34 @@ class TestYamahaPlaylist(unittest.TestCase):
         self.assertEqual(track_index, self._yamahaPlaylist._current_track_index)
         self.assertEqual(track_index, self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index])
         self.assertEqual(self._yamahaPlaylist.current_track().track, "People Make the World Go Round")
-        self.assertEqual(self._yamahaPlaylist._play_time_sec, 0)
+        self.assertEqual(self._yamahaPlaylist.play_time(), 0)
 
     def test_sync(self):
         # если проигрывание было запущено - время синхронизируется с учётом прошедшего времени
-        play_time = 3
+        elapsed = 3
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
-        self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
+        self._time += elapsed
+        self.assertEqual(elapsed, self._yamahaPlaylist.play_time())
 
         # если проигрывание было приостановлено - время проигрывания не изменится
-        play_time = 10
+        elapsed = 10
         self._yamahaPlaylist.pause()
         last_play_time = self._yamahaPlaylist._play_time_sec
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
-        self.assertEqual(last_play_time, self._yamahaPlaylist._play_time_sec)
+        self._time += elapsed
+        self.assertEqual(last_play_time, self._yamahaPlaylist.play_time())
 
         # если проигрывание было остановлено - время проигрывания остаётся равным нулю
         play_time = 10
         self._yamahaPlaylist.stop()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
-        self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
+        self._time += play_time
+        self.assertEqual(0, self._yamahaPlaylist.play_time())
 
     def test_sync_after_first_track(self):
         # после проигрывания первого трека - запускается следующий
         play_time = 164 + 3
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
         self.assertEqual(1, self._yamahaPlaylist._current_track_index)
         self.assertEqual(3, self._yamahaPlaylist._play_time_sec)
 
@@ -182,7 +218,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         # после проигрывания первого и второго треков - запускается третий
         play_time = 164 + 168 + 5
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
         self.assertEqual(2, self._yamahaPlaylist._current_track_index)
         self.assertEqual(5, self._yamahaPlaylist._play_time_sec)
 
@@ -194,8 +231,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_off()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
-                                       self._yamahaPlaylist.summary_time() + play_time)
+        self._time += self._yamahaPlaylist.summary_time() + play_time
+        self._yamahaPlaylist.sync()
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.stop, self._yamahaPlaylist._play_state)
@@ -206,8 +243,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_one()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
-                                       self._yamahaPlaylist.current_track().total_time * 3 + play_time)
+        self._time += self._yamahaPlaylist.current_track().total_time * 3 + play_time
+        self._yamahaPlaylist.sync()
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
@@ -218,8 +255,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         play_time = 5
         self._yamahaPlaylist.repeat_all()
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec +
-                                       self._yamahaPlaylist.summary_time() + play_time)
+        self._time += self._yamahaPlaylist.summary_time() + play_time
+        self._yamahaPlaylist.sync()
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(play_time, self._yamahaPlaylist._play_time_sec)
         self.assertEqual(PlayState.play, self._yamahaPlaylist._play_state)
@@ -237,7 +274,8 @@ class TestYamahaPlaylist(unittest.TestCase):
 
         # при переключении на предыдущий трек - время воспроизведения всегда сбрасывается на 0
         play_time = 5
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
         self._yamahaPlaylist.previous_track()
         self.assertEqual(0, self._yamahaPlaylist._current_track_index)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
@@ -259,10 +297,37 @@ class TestYamahaPlaylist(unittest.TestCase):
         # при переключении на следующий трек - время воспроизведения всегда сбрасывается на 0
         play_time = 5
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
         self._yamahaPlaylist.next_track()
         self.assertEqual(1, self._yamahaPlaylist._current_track_index)
         self.assertEqual(0, self._yamahaPlaylist._play_time_sec)
+
+    def test_fast_forward(self):
+        # перемотка вперёд 2 раза быстрее - то есть пройдёт в два раза больше времени
+        play_time = 5
+        self._yamahaPlaylist.play()
+        self._yamahaPlaylist.fast_forward_start()
+        self._time += play_time
+        self._yamahaPlaylist.sync()
+        self._yamahaPlaylist.fast_forward_end()
+        self.assertEqual(play_time * 2, self._yamahaPlaylist._play_time_sec)
+
+    def test_fast_reverse(self):
+        # перемотка назад в 2 раза быстрее - то есть пройдёт в два раза больше времени
+        play_time = 15
+        elapsed = 5
+
+        self._yamahaPlaylist.play()
+        self._time += play_time
+        self._yamahaPlaylist.sync()
+
+        self._yamahaPlaylist.fast_reverse_start()
+        self._time += elapsed
+        self._yamahaPlaylist.sync()
+        self._yamahaPlaylist.fast_reverse_end()
+
+        self.assertEqual(play_time - 2 * elapsed, self._yamahaPlaylist.play_time())
 
     def test_shuffle_on(self):
         play_time = 5
@@ -270,7 +335,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         self.assertEqual(1, self._yamahaPlaylist._current_track_index)
         self.assertEqual(1, self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index])
         self._yamahaPlaylist.play()
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
 
         # порядковый индекс текущего трека после "перемешивания" не меняется
         # меняется лишь порядок воспроизведения
@@ -286,7 +352,8 @@ class TestYamahaPlaylist(unittest.TestCase):
         self._yamahaPlaylist.play()
         self._yamahaPlaylist.shuffle_on()
         current_track_index = self._yamahaPlaylist._tracks_indexes[self._yamahaPlaylist._current_track_index]
-        self._yamahaPlaylist.sync_time(self._yamahaPlaylist._last_sync_sec + play_time)
+        self._time += play_time
+        self._yamahaPlaylist.sync()
 
         # порядковый индекс текущего трека после восстановления порядка не меняется
         self._yamahaPlaylist.shuffle_off()

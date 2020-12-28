@@ -13,7 +13,9 @@ def to_boolean(value: str):
 
 
 def set_playback(yamaha_input, playback: str):
-    assert playback in ("play", "stop", "pause", "next", "previous")
+    assert playback in ("play", "stop", "pause", "next", "previous",
+                        "fast_reverse_start", "fast_reverse_end",
+                        "fast_forward_start", "fast_forward_end")
 
     if playback == "play":
         yamaha_input.play()
@@ -25,6 +27,14 @@ def set_playback(yamaha_input, playback: str):
         yamaha_input.next_track()
     elif playback == "previous":
         yamaha_input.previous_track()
+    elif playback == "fast_reverse_start":
+        yamaha_input.fast_reverse_start()
+    elif playback == "fast_reverse_end":
+        yamaha_input.fast_reverse_end()
+    elif playback == "fast_forward_start":
+        yamaha_input.fast_forward_start()
+    elif playback == "fast_forward_end":
+        yamaha_input.fast_forward_end()
 
 
 def get_sender_from_path(path: str):
