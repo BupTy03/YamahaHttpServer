@@ -1,3 +1,5 @@
+import os
+
 from YamahaPlaylist import YamahaPlaylist
 from YamahaTrack import YamahaTrack
 from YamahaZone import YamahaZone
@@ -99,5 +101,9 @@ class YamahaNetusb:
             "total_time": current_track.total_time,
             "artist": current_track.artist,
             "album": current_track.album,
+            "albumart_url": "file:///" + os.path.abspath("img/news_of_the_world.jpg").replace('\\', '/'),
             "track": current_track.track
         }
+
+    def list_info(self, index_from: int, chunk_size: int):
+        return self._playlist.slice_to_list_info(index_from, chunk_size)

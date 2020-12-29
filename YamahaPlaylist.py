@@ -159,6 +159,18 @@ class YamahaPlaylist:
     def repeat_all(self):
         self._repeat_mode = RepeatMode.ALL
 
+    def slice_to_list_info(self, index_from: int, chunk_size: int):
+        list_info = list(map(lambda track: {"text": track.track, "attribute": 2},
+                             self._tracks[index_from:(index_from + chunk_size)]))
+
+        return {
+            "max_line": len(self._tracks),
+            "index": index_from,
+            "playing_index": self._current_track_index,
+            "menu_name": "Queen",
+            "list_info": list_info
+        }
+
 
 class TestYamahaPlaylist(unittest.TestCase):
     def setUp(self):

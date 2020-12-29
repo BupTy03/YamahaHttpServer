@@ -55,7 +55,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.wfile.write(json.dumps(json_answer).encode('utf-8'))
+        self.wfile.write(json.dumps(json_answer, indent=4).encode('utf-8'))
 
     def _send_success(self):
         self._send_json({"response_code": 0})
@@ -70,6 +70,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self._send_json(self._yamahaSystem.get_zone(sender).status())
         elif parsed_path.endswith("getPlayInfo"):
             self._send_json(self._yamahaSystem.get_input(sender).play_info())
+        elif parsed_path.endswith("getListInfo"):
+            assert sender == "netusb"
+            input_name = query_params["input"]
+            self._send_json(self._yamahaSystem.netusb().list_info(index_from=int(query_params["index"]),
+                                                                  chunk_size=int(query_params["size"])))
 
         elif parsed_path.endswith("setInput"):
             self._yamahaSystem.get_zone(sender).input_name = query_params["input"]
