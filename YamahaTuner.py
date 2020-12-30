@@ -76,12 +76,15 @@ class YamahaTuner:
         self._frequencies["dab"] = YamahaTuner.MIN_DAB_FREQ + self._dab_service_id * 1000
 
     def play_info(self):
-        return {
+        result = {
             "band": self._band,
             "am": {"freq": self._frequencies["am"]},
             "fm": {"freq": self._frequencies["fm"]},
             "dab": {"freq": self._frequencies["dab"]}
         }
+
+        result[self._band]["preset"] = self._current_preset
+        return result
 
     def presets_list(self):
         return self._presets
@@ -99,6 +102,7 @@ class YamahaTuner:
 
         zone.input_name = band
         self._apply_preset(self._presets[num])
+        self._current_preset = num
 
 
 def switch_preset(tuner: YamahaTuner, direction: str):
