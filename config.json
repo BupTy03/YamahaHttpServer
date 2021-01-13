@@ -29,30 +29,35 @@
         "netusb": [
             {
                 "album": "News of the world",
+                "albumart_url": "img/we_will_rock_you.jpg",
                 "artist": "Freddie Mercury",
                 "track": "We Will Rock You",
                 "total_time": 121
             },
             {
                 "album": "News of the world",
+                "albumart_url": "img/we_are_the_champions.jpg",
                 "artist": "Freddie Mercury",
                 "track": "We Are the Champions",
                 "total_time": 179
             },
             {
                 "album": "News of the world",
+                "albumart_url": "img/sheer_heart_attack.jpg",
                 "artist": "Mercury and Taylor",
                 "track": "Sheer Heart Attack",
                 "total_time": 204
             },
             {
                 "album": "News of the world",
+                "albumart_url": "img/news_of_the_world.jpg",
                 "artist": "Freddie Mercury",
                 "track": "All Dead, All Dead",
                 "total_time": 189
             },
             {
                 "album": "News of the world",
+                "albumart_url": "img/spread_your_wings.jpg",
                 "artist": "Freddie Mercury",
                 "track": "Spread Your Wings",
                 "total_time": 272

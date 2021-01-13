@@ -101,7 +101,7 @@ class YamahaNetusb:
             "total_time": current_track.total_time,
             "artist": current_track.artist,
             "album": current_track.album,
-            "albumart_url": "file:///" + os.path.abspath("img/news_of_the_world.jpg").replace('\\', '/'),
+            "albumart_url": "file:///" + os.path.abspath(current_track.albumart_url).replace('\\', '/'),
             "track": current_track.track
         }
 

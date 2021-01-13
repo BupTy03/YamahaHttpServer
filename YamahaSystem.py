@@ -25,6 +25,7 @@ def load_playlist(playlist: list):
     for item in playlist:
         result.append(YamahaTrack(track=item["track"],
                                   album=item["album"],
+                                  albumart_url=item.get("albumart_url", ""),
                                   artist=item["artist"],
                                   total_time=item["total_time"]))
     return result
