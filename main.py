@@ -5,6 +5,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from YamahaSystem import YamahaSystem, load_yamaha
 from YamahaTuner import YamahaTuner, switch_preset
+from YamahaNetusb import YamahaNetusb
 
 
 def to_boolean(value: str):
@@ -44,6 +45,20 @@ def get_sender_from_path(path: str):
     sender = path.split("/")[3]
     assert sender in ("main", "zone1", "zone2", "zone3", "netusb", "tuner", "cd")
     return sender
+
+
+def set_list_control(netusb: YamahaNetusb, query_params: dict):
+    type_ = query_params["type"]
+    assert type_ in ("select", "play", "return")
+
+    if type_ == "return":
+        return
+
+    index = int(query_params["index"])
+    if type_ == "select":
+        netusb.select_track_index(index)
+    elif type_ == "play":
+        netusb.play_track_index(index)
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -138,7 +153,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             elif sender == "netusb":
                 self._yamahaSystem.netusb().recall_preset(zone=zone, num=preset_num)
             self._send_success()
-
+        elif parsed_path.endswith("setListControl"):
+            set_list_control(netusb=self._yamahaSystem.netusb(), query_params=query_params)
+            self._send_success()
         else:
             print(f"Unknown request: {self.path}")
             self.send_response(404)

@@ -28,6 +28,14 @@ class YamahaNetusb:
     def pause(self):
         self._playlist.pause()
 
+    def select_track_index(self, index: int):
+        self._playlist.stop()
+        self._playlist.set_track_index(index)
+
+    def play_track_index(self, index: int):
+        self._playlist.play()
+        self._playlist.set_track_index(index)
+
     def next_track(self):
         self._playlist.next_track()
 
