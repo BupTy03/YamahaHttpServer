@@ -164,6 +164,7 @@ class YamahaPlaylist:
                              self._tracks[index_from:(index_from + chunk_size)]))
 
         return {
+            "menu_layer": 0,
             "max_line": len(self._tracks),
             "index": index_from,
             "playing_index": self._current_track_index,
