@@ -70,6 +70,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
+        json_answer["response_code"] = 0
         self.wfile.write(json.dumps(json_answer, indent=4).encode('utf-8'))
 
     def _send_success(self):
