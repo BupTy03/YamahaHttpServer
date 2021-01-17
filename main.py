@@ -1,6 +1,8 @@
 import urllib
 import json
 import threading
+import sys
+import argparse
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from YamahaSystem import YamahaSystem, load_yamaha
@@ -47,6 +49,10 @@ def get_sender_from_path(path: str):
     return sender
 
 
+def is_feedback(path: str):
+    return path.endswith("getStatus") or path.endswith("getPlayInfo") or path.endswith("getListInfo")
+
+
 def set_list_control(netusb: YamahaNetusb, query_params: dict):
     type_ = query_params["type"]
     assert type_ in ("select", "play", "return")
@@ -81,6 +87,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         parsed_path = parsed.path
         query_params = dict(urllib.parse.parse_qsl(parsed.query))
         sender = get_sender_from_path(parsed_path)
+
+        if is_feedback(parsed_path):
+            self.print_feedback()
+        else:
+            self.print_command()
 
         if parsed_path.endswith("getStatus"):
             self._send_json(self._yamahaSystem.get_zone(sender).status())
@@ -162,6 +173,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
+    def log_message(self, format, *args):
+        pass
+
+    def print_command(self):
+        if self._yamahaSystem._filter not in ("feedbacks", "f", "feed"):
+            print(f"\033[33m{self.requestline}\033[0m")
+
+    def print_feedback(self):
+        if self._yamahaSystem._filter not in ("commands", "c", "comm"):
+            print(f"\033[32m{self.requestline}\033[0m")
+
     def do_GET(self):
         try:
             self._make_response()
@@ -183,7 +205,11 @@ class start_server:
 
 
 def main():
-    with load_yamaha("config.json"):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--filter")
+    parsed_args = parser.parse_args(sys.argv[1:])
+
+    with load_yamaha("config.json", parsed_args.filter):
         with start_server():
             input("Press 'Enter' to exit\n")
 

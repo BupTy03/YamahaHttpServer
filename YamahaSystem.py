@@ -71,7 +71,7 @@ class YamahaSystem:
         return cls.instance
 
     @classmethod
-    def load(cls, filename: str):
+    def load(cls, filename: str, filter: str):
         data = None
         with open(filename, "r") as file:
             data = json.load(file)
@@ -83,6 +83,7 @@ class YamahaSystem:
 
         cls.instance._tuner = YamahaTuner(load_tuner_presets(data["presets"]["tuner"]))
         cls.instance._cd = YamahaCD(YamahaPlaylist(load_playlist(data["playlist"]["cd"])))
+        cls.instance._filter = filter
 
     @classmethod
     def store(cls, filename: str):
@@ -123,11 +124,12 @@ class YamahaSystem:
 
 
 class load_yamaha:
-    def __init__(self, config_file: str):
+    def __init__(self, config_file: str, filter: str):
         self._config_file = config_file
+        self._filter = filter
 
     def __enter__(self):
-        YamahaSystem.load(self._config_file)
+        YamahaSystem.load(self._config_file, self._filter)
 
     def __exit__(self, type, value, traceback):
         YamahaSystem.store(self._config_file)
