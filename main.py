@@ -153,7 +153,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             assert sender == "tuner"
             assert query_params["band"] in ("am", "fm")
             assert query_params["tuning"] == "direct"
-            self._yamahaSystem.tuner().set_frequency(float(query_params["num"]))
+            self._yamahaSystem.tuner().set_frequency(int(query_params["num"]))
             self._send_success()
         elif parsed_path.endswith("recallPreset"):
             assert sender in ("tuner", "netusb")

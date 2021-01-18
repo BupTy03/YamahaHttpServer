@@ -50,7 +50,7 @@ class YamahaTuner:
     def frequency(self):
         return self._frequencies[self._band]
 
-    def set_frequency(self, freq: float):
+    def set_frequency(self, freq: int):
         self._frequencies[self._band] = freq
 
     def next_preset(self):
