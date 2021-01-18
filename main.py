@@ -104,7 +104,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                                                                   chunk_size=int(query_params["size"])))
 
         elif parsed_path.endswith("setInput"):
-            self._yamahaSystem.get_zone(sender).input_name = query_params["input"]
+            self._yamahaSystem.set_input(zone=sender, input=query_params["input"])
             self._send_success()
         elif parsed_path.endswith("setMute"):
             self._yamahaSystem.get_zone(sender).mute = to_boolean(query_params["enable"])

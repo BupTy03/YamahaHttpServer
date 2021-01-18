@@ -19,6 +19,9 @@ class YamahaNetusb:
         self._playlist = playlist
         self._presets = presets
 
+    def set_input(self, input: str):
+        self._input = input
+
     def play(self):
         self._playlist.play()
 

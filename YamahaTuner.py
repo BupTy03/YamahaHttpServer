@@ -104,6 +104,10 @@ class YamahaTuner:
         self._apply_preset(self._presets[num])
         self._current_preset = num
 
+    def set_band(self, band: str):
+        assert is_valid_band(band)
+        self._band = band
+
 
 def switch_preset(tuner: YamahaTuner, direction: str):
     assert direction in ("next", "previous")
