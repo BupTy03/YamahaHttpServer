@@ -22,6 +22,8 @@ class PlayState(Enum):
 
 
 class YamahaPlaylist:
+    FAST_FORWARD_SPEED = 5
+
     def __init__(self, tracks: list, whats_a_time=time.time):
         self._tracks = tracks
         self._tracks_indexes = list(range(len(tracks)))
@@ -47,9 +49,9 @@ class YamahaPlaylist:
             return self._current_track_index, self._play_time_sec
 
         if self._play_state == PlayState.fast_reverse:
-            elapsed_time_sec *= -2
+            elapsed_time_sec *= -YamahaPlaylist.FAST_FORWARD_SPEED
         elif self._play_state == PlayState.fast_forward:
-            elapsed_time_sec *= 2
+            elapsed_time_sec *= YamahaPlaylist.FAST_FORWARD_SPEED
 
         current_track = self._tracks[self._tracks_indexes[self._current_track_index]]
         if self._repeat_mode == RepeatMode.ONE:
