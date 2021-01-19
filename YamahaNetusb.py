@@ -90,13 +90,16 @@ class YamahaNetusb:
         return self._presets
 
     def store_preset(self, num: int):
-        assert 0 <= num < len(self._presets)
-        self._presets[num] = YamahaNetusbPreset(input_name=self._input, text=f"Preset for {self._input}")
+        assert 1 <= num <= len(self._presets)
+        preset_index = num - 1
+        self._presets[preset_index] = YamahaNetusbPreset(input_name=self._input, text=f"Preset for {self._input}")
 
     def recall_preset(self, zone: YamahaZone, num: int):
-        assert 0 <= num < len(self._presets)
+        assert 1 <= num <= len(self._presets)
 
-        current_preset = self._presets[num]
+        preset_index = num - 1
+        current_preset = self._presets[preset_index]
+        self._input = current_preset.input
         zone.input_name = current_preset.input
 
     def play_info(self):

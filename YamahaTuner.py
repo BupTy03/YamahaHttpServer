@@ -90,19 +90,22 @@ class YamahaTuner:
         return self._presets
 
     def store_preset(self, num: int):
-        assert 0 <= num < len(self._presets)
-        self._presets[num] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
+        assert 1 <= num <= len(self._presets)
+        preset_index = num - 1
+        self._presets[preset_index] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
 
     def recall_preset(self, zone: YamahaZone, band: str, num: int):
         assert is_valid_band(band)
-        assert 0 <= num < len(self._presets)
+        assert 1 <= num <= len(self._presets)
 
         if band == "unknown":
             return
 
-        zone.input_name = band
-        self._apply_preset(self._presets[num])
-        self._current_preset = num
+        preset_index = num - 1
+        preset = self._presets[preset_index]
+        zone.input_name = preset.band()
+        self._apply_preset(preset)
+        self._current_preset = preset_index
 
     def set_band(self, band: str):
         assert is_valid_band(band)
