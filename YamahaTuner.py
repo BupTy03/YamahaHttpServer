@@ -102,6 +102,8 @@ class YamahaTuner:
     def store_preset(self, num: int):
         assert 1 <= num <= len(self._presets)
         preset_index = num - 1
+        self._no_preset = False
+        self._current_preset = preset_index
         self._presets[preset_index] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
 
     def recall_preset(self, zone: YamahaZone, band: str, num: int):
