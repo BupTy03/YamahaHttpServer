@@ -42,6 +42,7 @@ class YamahaTuner:
         self._dab_service_id = 0
         self._current_preset = 0
         self._presets = presets
+        self._no_preset = False
 
     def _apply_preset(self, preset):
         self._band = preset.band()
@@ -51,6 +52,9 @@ class YamahaTuner:
         return self._frequencies[self._band]
 
     def set_frequency(self, freq: int):
+        if self._presets[self._current_preset].number() != freq:
+            self._no_preset = True
+
         self._frequencies[self._band] = freq
 
     def next_preset(self):
@@ -71,19 +75,25 @@ class YamahaTuner:
         self._dab_service_id = min(self._dab_service_id + 1, 65)
         self._frequencies["dab"] = YamahaTuner.MIN_DAB_FREQ + self._dab_service_id * 1000
 
+        if self._presets[self._current_preset].number() != self.frequency():
+            self._no_preset = True
+
     def prev_dab(self):
         self._dab_service_id = max(self._dab_service_id - 1, 0)
         self._frequencies["dab"] = YamahaTuner.MIN_DAB_FREQ + self._dab_service_id * 1000
 
+        if self._presets[self._current_preset].number() != self.frequency():
+            self._no_preset = True
+
     def play_info(self):
+        preset_num = 0 if self._no_preset else int(self._current_preset + 1)
         result = {
             "band": self._band,
-            "am": {"freq": self._frequencies["am"]},
-            "fm": {"freq": self._frequencies["fm"]},
-            "dab": {"freq": self._frequencies["dab"]}
+            "am": {"freq": self._frequencies["am"], "preset": preset_num},
+            "fm": {"freq": self._frequencies["fm"], "preset": preset_num},
+            "dab": {"freq": self._frequencies["dab"], "preset": preset_num}
         }
 
-        result[self._band]["preset"] = self._current_preset
         return result
 
     def presets_list(self):
@@ -106,9 +116,13 @@ class YamahaTuner:
         zone.input_name = preset.band()
         self._apply_preset(preset)
         self._current_preset = preset_index
+        self._no_preset = False
 
     def set_band(self, band: str):
         assert is_valid_band(band)
+        if self._presets[self._current_preset].band() != band:
+            self._no_preset = True
+
         self._band = band
 
 
