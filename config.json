@@ -100,23 +100,23 @@
         "tuner": [
             {
                 "band": "am",
-                "number": 111
+                "number": 103100
             },
             {
                 "band": "am",
-                "number": 456
+                "number": 102100
             },
             {
                 "band": "fm",
-                "number": 789
+                "number": 104400
             },
             {
                 "band": "fm",
-                "number": 3259
+                "number": 102100
             },
             {
                 "band": "dab",
-                "number": 15
+                "number": 181936
             }
         ],
         "netusb": [
