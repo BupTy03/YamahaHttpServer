@@ -35,9 +35,9 @@ class YamahaTuner:
     def __init__(self, presets: list):
         self._band = "am"  # "am" / "fm" / "dab
         self._frequencies = {
-            "am": 1000,
-            "fm": 1000,
-            "dab": 1000
+            "am": 103100,
+            "fm": 106200,
+            "dab": 235776
         }
         self._dab_service_id = 0
         self._current_preset = 0
