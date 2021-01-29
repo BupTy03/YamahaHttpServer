@@ -20,5 +20,6 @@ class YamahaZone:
             "input": self.input_name,
             "mute": self.mute,
             "power": self.power,
-            "volume": self.volume
+            "volume": self.volume,
+            "max_volume": 80
         }
