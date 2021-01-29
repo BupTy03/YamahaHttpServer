@@ -82,6 +82,12 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def _send_success(self):
         self._send_json({"response_code": 0})
 
+    def _check_sender(self, sender: str, expected_senders):
+        if type(expected_senders) is str:
+            assert sender == expected_senders, "Wrong sender, " + expected_senders + " expected"
+        else:
+            assert sender in expected_senders, "Wrong sender, " + " or ".join(expected_senders) + " expected"
+
     def _make_response(self):
         parsed = urllib.parse.urlparse(self.path)
         parsed_path = parsed.path
@@ -98,7 +104,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         elif parsed_path.endswith("getPlayInfo"):
             self._send_json(self._yamahaSystem.get_input(sender).play_info())
         elif parsed_path.endswith("getListInfo"):
-            assert sender == "netusb"
+            self._check_sender(sender, "netusb")
             input_name = query_params["input"]
             self._send_json(self._yamahaSystem.netusb().list_info(index_from=int(query_params["index"]),
                                                                   chunk_size=int(query_params["size"])))
@@ -124,20 +130,20 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self._send_success()
         elif parsed_path.endswith("setPlayback"):
             if query_params["playback"] == "track_select":
-                assert sender == "cd"
+                assert sender == "cd", "Wrong sender, cd expected"
                 self._yamahaSystem.cd().set_track_num(int(query_params["num"]))
             else:
                 set_playback(self._yamahaSystem.get_input(sender), query_params["playback"])
             self._send_success()
         elif parsed_path.endswith("switchPreset"):
-            assert sender == "tuner"
+            self._check_sender(sender, "tuner")
             switch_preset(self._yamahaSystem.tuner(), query_params["dir"])
             self._send_success()
         elif parsed_path.endswith("setDabService"):
-            assert sender == "tuner"
+            self._check_sender(sender, "tuner")
 
             direction = query_params["dir"]
-            assert direction in ("previous", "next")
+            assert direction in ("previous", "next"), 'Wrong direction, "previous" or "next" expected'
 
             if direction == "previous":
                 self._yamahaSystem.tuner().prev_dab()
@@ -146,17 +152,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
             self._send_success()
         elif parsed_path.endswith("storePreset"):
-            assert sender in ("tuner", "netusb")
+            self._check_sender(sender, ("tuner", "netusb"))
             self._yamahaSystem.get_input(sender).store_preset(int(query_params["num"]))
             self._send_success()
         elif parsed_path.endswith("setFreq"):
-            assert sender == "tuner"
-            assert query_params["band"] in ("am", "fm")
-            assert query_params["tuning"] == "direct"
+            self._check_sender(sender, "tuner")
+            assert query_params["band"] in ("am", "fm"), 'Wrong band, "am" or "fm" expected'
+            assert query_params["tuning"] == "direct", 'Wrong tuning, only "direct" is supported by emulator'
             self._yamahaSystem.tuner().set_frequency(int(query_params["num"]))
             self._send_success()
         elif parsed_path.endswith("recallPreset"):
-            assert sender in ("tuner", "netusb")
+            self._check_sender(sender, ("tuner", "netusb"))
 
             zone = self._yamahaSystem.get_zone(query_params["zone"])
             preset_num = int(query_params["num"])
