@@ -126,7 +126,7 @@ class YamahaSystem:
         return self._cd
 
     def get_input(self, name: str):
-        assert name in ("netusb", "tuner", "cd")
+        assert name in ("netusb", "tuner", "cd"), 'Invalid input name, expected "netusb", "tuner" or "cd"'
         if name == "netusb":
             return self.netusb()
         elif name == "tuner":

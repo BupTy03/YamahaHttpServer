@@ -119,7 +119,7 @@ class YamahaPlaylist:
         return self._tracks[self._tracks_indexes[self._current_track_index]]
 
     def set_track_index(self, index: int):
-        assert 0 <= index < self.count_tracks()
+        assert 0 <= index < self.count_tracks(), f"Track index is out of range [0, {self.count_tracks()})"
         self._current_track_index = self._tracks_indexes.index(index)
         self._play_time_sec = 0
 

@@ -90,12 +90,12 @@ class YamahaNetusb:
         return self._presets
 
     def store_preset(self, num: int):
-        assert 1 <= num <= len(self._presets)
+        assert 1 <= num <= len(self._presets), f"Preset num is out of range [1, {len(self._presets)}]"
         preset_index = num - 1
         self._presets[preset_index] = YamahaNetusbPreset(input_name=self._input, text=f"Preset for {self._input}")
 
     def recall_preset(self, zone: YamahaZone, num: int):
-        assert 1 <= num <= len(self._presets)
+        assert 1 <= num <= len(self._presets), f"Preset num is out of range [1, {len(self._presets)}]"
 
         preset_index = num - 1
         current_preset = self._presets[preset_index]

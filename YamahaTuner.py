@@ -7,8 +7,8 @@ def is_valid_band(band: str):
 
 class YamahaTunerPreset:
     def __init__(self, band="unknown", number=0):
-        assert is_valid_band(band)
-        assert number >= 0
+        assert is_valid_band(band), "Wrong band"
+        assert number >= 0, "Wrong preset number"
 
         self._band = band
         self._number = number
@@ -21,7 +21,7 @@ class YamahaTunerPreset:
         return self._band
 
     def set_number(self, num: int):
-        assert num >= 0
+        assert num >= 0, "Invalid freq num, expected >= 0"
         self._number = num
 
     def number(self):
@@ -100,15 +100,15 @@ class YamahaTuner:
         return self._presets
 
     def store_preset(self, num: int):
-        assert 1 <= num <= len(self._presets)
+        assert 1 <= num <= len(self._presets), f"Preset num is out of range [1, {len(self._presets)}]"
         preset_index = num - 1
         self._no_preset = False
         self._current_preset = preset_index
         self._presets[preset_index] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
 
     def recall_preset(self, zone: YamahaZone, band: str, num: int):
-        assert is_valid_band(band)
-        assert 1 <= num <= len(self._presets)
+        assert is_valid_band(band), "Wrong band"
+        assert 1 <= num <= len(self._presets), f"Preset num is out of range [1, {len(self._presets)}]"
 
         if band == "unknown":
             return
@@ -121,7 +121,7 @@ class YamahaTuner:
         self._no_preset = False
 
     def set_band(self, band: str):
-        assert is_valid_band(band)
+        assert is_valid_band(band), "Wrong band"
         if self._presets[self._current_preset].band() != band:
             self._no_preset = True
 
@@ -129,7 +129,7 @@ class YamahaTuner:
 
 
 def switch_preset(tuner: YamahaTuner, direction: str):
-    assert direction in ("next", "previous")
+    assert direction in ("next", "previous"), "Wrong tuning direction"
     if direction == "next":
         tuner.next_preset()
     elif direction == "previous":
