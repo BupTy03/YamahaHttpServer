@@ -67,7 +67,7 @@ def store_netusb_presets_list(presets: list):
 
 
 def is_tuner_input(input: str):
-    return input in ("am", "fm", "dab")
+    return input == "tuner"
 
 
 def is_cd_input(input: str):
@@ -136,10 +136,9 @@ class YamahaSystem:
 
     def set_input(self, zone: str, input: str):
         self.get_zone(zone).input_name = input
-        if is_tuner_input(input):
-            self.tuner().set_band(input)
-        elif is_netusb_input(input):
+        if is_netusb_input(input):
             self.netusb().set_input(input)
+
 
 class load_yamaha:
     def __init__(self, config_file: str, filter: str):
