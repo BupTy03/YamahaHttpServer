@@ -155,6 +155,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self._check_sender(sender, ("tuner", "netusb"))
             self._yamahaSystem.get_input(sender).store_preset(int(query_params["num"]))
             self._send_success()
+        elif parsed_path.endswith("setBand"):
+            self._check_sender(sender, "tuner")
+            self._yamahaSystem.tuner().set_band(query_params["band"])
+            self._send_success()
         elif parsed_path.endswith("setFreq"):
             self._check_sender(sender, "tuner")
             assert query_params["band"] in ("am", "fm"), 'Wrong band, "am" or "fm" expected'
