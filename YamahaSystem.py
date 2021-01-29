@@ -89,6 +89,7 @@ class YamahaSystem:
             data = json.load(file)
 
         cls.instance = super(YamahaSystem, cls).__new__(cls)
+        cls.instance._features = data["features"]
         cls.instance._zones = load_zones(data)
         cls.instance._netusb = YamahaNetusb(load_netusb_presets(data["presets"]["netusb"]),
                                             YamahaPlaylist(load_playlist(data["playlist"]["netusb"])))
@@ -108,6 +109,9 @@ class YamahaSystem:
         data["presets"]["netusb"] = store_netusb_presets_list(cls.instance._netusb.presets_list())
         with open(filename, "w") as file:
             file.write(json.dumps(data, indent=4))
+
+    def features(self):
+        return self._features
 
     def get_zone(self, name):
         zones = list(filter(lambda z: z.name == name, self._zones))

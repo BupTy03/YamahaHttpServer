@@ -107,7 +107,7 @@ class YamahaTuner:
         self._presets[preset_index] = YamahaTunerPreset(band=self._band, number=self._frequencies[self._band])
 
     def recall_preset(self, zone: YamahaZone, band: str, num: int):
-        assert is_valid_band(band), "Wrong band"
+        assert is_valid_band(band) or band == "common", "Wrong band"
         assert 1 <= num <= len(self._presets), f"Preset num is out of range [1, {len(self._presets)}]"
 
         if band == "unknown":

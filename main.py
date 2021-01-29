@@ -45,7 +45,7 @@ def get_sender_from_path(path: str):
     # разобьётся на: ['', 'YamahaExtendedControl', 'v1', 'main', 'getStatus']
     # элемент под индексом 3 ('main' - имя зоны) - то что нам нужно
     sender = path.split("/")[3]
-    assert sender in ("main", "zone1", "zone2", "zone3", "netusb", "tuner", "cd")
+    assert sender in ("system", "main", "zone1", "zone2", "zone3", "netusb", "tuner", "cd"), "Unknown sender"
     return sender
 
 
@@ -99,7 +99,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         else:
             self.print_command()
 
-        if parsed_path.endswith("getStatus"):
+        if parsed_path.endswith("getFeatures"):
+            self._check_sender(sender, "system")
+            self._send_json(self._yamahaSystem.features())
+        elif parsed_path.endswith("getStatus"):
             self._send_json(self._yamahaSystem.get_zone(sender).status())
         elif parsed_path.endswith("getPlayInfo"):
             self._send_json(self._yamahaSystem.get_input(sender).play_info())

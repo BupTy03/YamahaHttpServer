@@ -1,4 +1,12 @@
 {
+    "features": {
+        "tuner": {
+            "preset": {
+                "type": "common"
+            }
+        }
+    },
+
     "zones_info": {
         "main": {
             "input": "spotify",
