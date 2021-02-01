@@ -115,7 +115,7 @@ class YamahaTuner:
 
         preset_index = num - 1
         preset = self._presets[preset_index]
-        zone.input_name = preset.band()
+        zone.input_name = "tuner"
         self._apply_preset(preset)
         self._current_preset = preset_index
         self._no_preset = False
