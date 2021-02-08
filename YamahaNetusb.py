@@ -115,7 +115,7 @@ class YamahaNetusb:
             "total_time": current_track.total_time,
             "artist": current_track.artist,
             "album": current_track.album,
-            "albumart_url": "file:///" + os.path.abspath(current_track.albumart_url).replace('\\', '/'),
+            "albumart_url": current_track.albumart_url,
             "track": current_track.track
         }
 
