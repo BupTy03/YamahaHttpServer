@@ -124,6 +124,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         elif parsed_path.endswith("setPower"):
             self._yamahaSystem.get_zone(sender).set_power(query_params["power"])
             self._send_success()
+        elif parsed_path.endswith("setSoundProgram"):
+            self._yamahaSystem.get_zone(sender).set_sound_program(query_params["program"])
+            self._send_success()
 
         elif parsed_path.endswith("toggleRepeat"):
             self._yamahaSystem.get_input(sender).toggle_repeat()

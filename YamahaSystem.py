@@ -16,7 +16,8 @@ def load_zones(data: dict):
                                 input_name=value["input"],
                                 mute=value["mute"],
                                 power=value["power"],
-                                volume=value["volume"]))
+                                volume=value["volume"],
+                                sound_program=value["sound_program"]))
     return zones
 
 

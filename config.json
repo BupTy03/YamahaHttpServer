@@ -6,31 +6,38 @@
             }
         }
     },
-
     "zones_info": {
         "main": {
-            "input": "spotify",
+            "input": "tv",
             "mute": false,
             "power": "standby",
-            "volume": 5
+            "volume": 5,
+            "max_volume": 80,
+            "sound_program": "vienna"
         },
         "zone1": {
             "input": "airplay",
             "mute": true,
             "power": "standby",
-            "volume": 0
+            "volume": 0,
+            "max_volume": 80,
+            "sound_program": "vienna"
         },
         "zone2": {
             "input": "juke",
             "mute": true,
             "power": "standby",
-            "volume": 1
+            "volume": 1,
+            "max_volume": 80,
+            "sound_program": "amsterdam"
         },
         "zone3": {
             "input": "tidal",
             "mute": true,
             "power": "standby",
-            "volume": 100
+            "volume": 100,
+            "max_volume": 80,
+            "sound_program": "disco"
         }
     },
     "playlist": {
